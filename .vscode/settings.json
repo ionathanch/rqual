@@ -1,0 +1,27 @@
+{
+  "latex-workshop.latex.search.rootFiles.include":[
+    "**/*.tex"
+  ],
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexrun",
+      "command": "./latexrun",
+      "args": [
+        "--latex-args='-shell-escape'",
+        "--max-iterations=4",
+        "%DOCFILE%.tex"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexrun",
+      "tools": [
+        "latexrun"
+      ]
+    }
+  ]
+}
