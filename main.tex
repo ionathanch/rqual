@@ -60,6 +60,7 @@
 
 \section{Introduction}
 
+\iffalse
 Dependent type theories form the theoretical foundations of many proof assistants
 used for automating and mechanizing theorems in areas ranging from pure mathematics
 to modelling real programming languages.
@@ -73,7 +74,6 @@ As such, they share many of the same components
 as implementations of typical programming languages,
 such as a parser, a type checker, and a compiler.
 
-% can assume that ppl know about proof assistant extensions
 Like many language implementations,
 proof assistants will incorporate optional language features
 that influence the behaviour of its inner components.
@@ -95,14 +95,36 @@ because together they would violate logical consistency of the type theory.
 In \cref{sec:extensions},
 I describe a few such extensions found in select proof assistants,
 and the ways some combinations are incompatible.
+\fi
+
+At the core of a proof assistant founded on the Curry--Howard correspondence
+is a type checker that validates a proof of a proposition---a term inhabiting
+a corresponding type in a dependent type theory.
+These type theories are typically based on some flavour of
+Martin-L\"of Type Theory (MLTT)~\citep{mltt}
+or the Calculus of Inductive Constructions (CIC)~\citep{cic}.
+In practice, a proof assistant doesn't implement merely one type theory,
+but a whole host of them, as they will include language extensions
+that augment or modify its reasoning power.
+
+These type theoretic extensions can consist of additional typing rules
+or new constants with or without extra equational behaviour (the latter being axioms).
+Each extension enabled can be considered a separate theory altogether,
+as they may embody semantically different reasoning principles.
+Furthermore, there exist extensions that are mutually incompatible
+because together they would violate logical consistency of the type theory.
+In \cref{sec:extensions},
+I describe a few such extensions found in select proof assistants,
+and the ways some combinations are incompatible.
 
 Thus when proof assistants provide mechanisms for language extensions,
 they are careful to track the usage of these extensions to rule out inconsistencies.
-The tracking done by the type checker is \emph{external} to the type system:
+The tracking done by their type checkers is \emph{external} to the type system:
 within the language itself,
 one cannot assert that a definition is permitted to depend on a particular extension,
 nor that it is guaranteed \emph{not} to use it.
 Furthermore, while each extension may have been independently verified to be consistent,
+as well as some common combinations of extensions,
 there are no formal descriptions of interactions between parts of code
 that use different sets of extensions.
 Ultimately, what we are missing is a framework for describing
@@ -118,7 +140,7 @@ In particular, I have worked on the Dependent Calculus of Indistinguishability
 the latter of which is a type theory with dependency tracking,
 whose key properties I describe in \cref{sec:dcoi}.
 
-I propose that DCOI can be used as a basis for a framework
+DCOI could potentially be used as a basis for a framework
 which internalizes extension tracking by stratifying
 their corresponding type theories into hierarchies of dependency levels,
 where compatibility between extensions maps to the intuitive notion of permission.
@@ -138,8 +160,7 @@ Broadly speaking, they are all based on variants of MLTT or CIC,
 and have dependent functions, type universes, and inductive types,
 which are sufficient to encode a wide variety of logical propositions and proofs.
 
-Each of these proof assistants, however,
-include features that extend the power of their foundations;
+Each of these proof assistants include features that extend the power of their foundations;
 below are a few notable extensions.
 
 \begin{itemize}[noitemsep,topsep=0pt]
@@ -203,11 +224,11 @@ A desirable property of bounded naturals is that
 two bounded naturals are equal if their contained naturals are equal.
 %
 \begin{align*}
-  \mathit{eqBNat} &: \forall (m : \kw{Nat}) (b_1 b_2 : \kw{BNat} \; m)\mathpunct{.}
+  \mathit{eqBNat} &: \forall (m : \kw{Nat}) (b_1 \; b_2 : \kw{BNat} \; m)\mathpunct{.}
     \mathit{getNat} \; m \; b_1 \equiv \mathit{getNat} \; m \; b_2 \to b_1 \equiv b_2
 \end{align*}
 %
-Trying to prove this by destructing the bounded naturals as
+If we try to prove this by destructing $b_1$ and $b_2$ as
 $(\mathit{bnat} \; n_1 \; m \; p_1)$ and $(\mathit{bnat} \; n_2 \; m \; p_2)$,
 while we have an equality $e : n_1 \equiv n_2$ by reduction of $\mathit{getNat}$,
 we do \emph{not} have a proof of $p_1 \equiv p_2$%
@@ -217,7 +238,7 @@ so that it has the same type as $p_2$.}.
 Depending on how $\cdot \le \cdot$ is implemented,
 it may be possible to prove propositionally that any two inequality proofs are equal.
 Alternatively, if propositions are definitionally proof irrelevant,
-the inequality proofs can effectively be ignored,
+the inequality proofs can be ignored,
 and rewriting the goal by $e$ is sufficient.
 
 UIP is similarly useful to avoid reasoning about equalities between equalities
@@ -333,7 +354,7 @@ and tactics such as \code{tauto} will automatically apply classical reasoning.
 There is work towards constructively integrating classical principles into type theory consistently,
 typically in the form of calculi with control operators~\citep{mu,mumu,dl,sr}.
 
-One has to be careful, however, that a chosen set of features and axioms
+One has to be careful that a chosen set of features and axioms
 do not render the type theory logically inconsistent and thus useless for proving.
 A number of them are known to be incompatible with one another;
 below are a few such combinations.
@@ -370,7 +391,7 @@ below are a few such combinations.
     \citep[Example 3.1.9]{hott}.
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \begin{tikzcd}
   & \mathcolor{red}{\varnothing} & & \\
@@ -462,7 +483,7 @@ An ideal system for enabling and disabling features and axioms, then,
 should track which ones are and aren't used, at least at the definition level,
 and it should be formally described with the type theory as a whole.
 This suggests that a system for dependency tracking would be a good starting point.
-Therefore, I propose that the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
+Therefore, the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
 a type system that incorporates dependency tracking and dependent types,
 could be a suitable framework for tracking multiple type theories.
 
