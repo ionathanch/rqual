@@ -16,10 +16,11 @@ but how type checkers handle their interactions at compile time is not formally 
 Furthermore, the way proof assistants currently enable extensions can be too coarse and imprecise
 when it comes to guarantees about the features a top-level definition may use.
 
-I propose using the Dependent Calculus of Indistinguishability (DCOI)
-for formalizing granular and precise extension tracking.
+A first step towards a framework of extensions could use
+the Dependent Calculus of Indistinguishability (DCOI)
+to formalize granular and precise extension tracking.
 DCOI is a type system with dependency tracking,
 where terms and variables are assigned dependency levels alongside their types.
 These dependency levels form a lattice that describes which levels are permitted to access what.
-In this project, each extension would have a corresponding dependency level,
-and the lattice would describe how extensions are permitted to interact.
+This report explores how extensions could correspond to dependency levels,
+and how the lattice would describe how extensions are permitted to interact.
