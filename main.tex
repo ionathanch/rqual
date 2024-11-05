@@ -151,7 +151,7 @@ There is much prior and related work that this project relies on and relates to,
 which I divide into work I have personally contributed to (\cref{sec:prior})
 and other work in this space (\cref{sec:related}).
 
-\section{Proof Assistant Extensions in Practice} \label{sec:extensions}
+\section{Proof assistant extensions in practice} \label{sec:extensions}
 
 To look at extensions in practice,
 let us focus on three popular proof assistants:
@@ -160,44 +160,24 @@ Broadly speaking, they are all based on variants of MLTT or CIC,
 and have dependent functions, type universes, and inductive types,
 which are sufficient to encode a wide variety of logical propositions and proofs.
 
+\subsection{Built-in features}
+
 Each of these proof assistants include features that extend the power of their foundations;
-below are a few notable extensions.
+below are a few notable extensions,
+some of which are hidden behind option flags.
 
-\begin{itemize}[noitemsep,topsep=0pt]
-  \item \textbf{Impredicativity}: Rocq and Lean, being based on CIC,
-    feature a universe $\kw{Prop}$ of propositions such that
-    a quantification (\ie dependent function type) $\forall (x : A) \mathpunct{.} B$
-    is a proposition if $B$ is a proposition,
-    regardless of the universe in which $A$ lives,
-    which may be larger than $\kw{Prop}$.
-    Inductive types may also be defined in $\kw{Prop}$,
-    which permits its constructors to have argument types
-    in universes larger than $\kw{Prop}$.
-    Such inductives are said to be \emph{large}.
-  \item \textbf{Definitional proof irrelevance}:
-    The inhabitants of propositions in Lean are definitionally equal
-    and thus treated as interchangeable during type checking;
-    these propositions are said to be \emph{strict}.
-    Rocq has a separate $\kw{SProp}$ universe of proof-irrelevant propositions,
-    and Agda has a predicative hierarchy $\kw{Prop}_i$ of such universes \citep{sprop}.
-  \item \textbf{Uniqueness of identity proofs} (UIP):
-    Agda's default pattern matching behaviour admits
-    that inhabitants of the same propositional equality
-    are themselves propositionally equal,
-    which is proven via defining \textbf{Axiom K}~\citep{axiomk},
-    a computational eliminator for propositional equalities of the form $a \equiv a$.
-  \item \textbf{Strong elimination}:
-    Also known as \emph{large} elimination,
-    an element of an inductive datatype can be destructed or eliminated
-    into a type at a larger universe.
-    That is, a term whose type is in $\kw{Type}_i$
-    can be eliminated to return a term whose type is in $\kw{Type}_j$
-    for some $j > i$.
-    For proofs of propositions in $\kw{Prop}$,
-    large elimination corresponds to eliminating into any non-proposition.
-\end{itemize}
+\paragraph{Impredicativity.}
+Rocq and Lean, being based on CIC,
+feature a universe $\kw{Prop}$ of propositions such that
+a quantification (\ie dependent function type) $\forall (x : A) \mathpunct{.} B$
+is a proposition if $B$ is a proposition,
+regardless of the universe in which $A$ lives,
+which may be larger than $\kw{Prop}$.
+Inductive types may also be defined in $\kw{Prop}$,
+which permits its constructors to have argument types
+in universes larger than $\kw{Prop}$.
+Such inductives are said to be \emph{large}.
 
-Each of these increase expressivity by allowing more types to be stated and inhabited.
 Impredicativity allows for self-referential propositions by quantifying over $\kw{Prop}$.
 For instance, given a proof that all propositions imply their double negation,
 $$\mathit{dn}: \forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P,$$
@@ -207,6 +187,16 @@ In the predicative setting, a quantification over a universe $\kw{Type}_0 : \kw{
 itself has type $\kw{Type}_1$, and in particular,
 $$\Pi (A : \kw{Type}_0)\mathpunct{.} A \to \neg \neg A : \kw{Type}_1,$$
 so an element of this type may not be applied to the type itself.
+
+\paragraph{Definitional proof irrelevance.}
+The inhabitants of propositions in Lean are definitionally equal
+and thus treated as interchangeable during type checking;
+these propositions are said to be \emph{strict}.
+Rocq has a separate $\kw{SProp}$ universe of proof-irrelevant propositions,
+and Agda has a predicative hierarchy $\kw{Prop}_i$ of such universes \citep{sprop}.
+To use strict $\kw{Prop}$,
+Rocq requires the flag \code{Allow StrictProp},
+while Agda requires the option \code{\{-\# OPTIONS -{}-prop \#-\}}.
 
 Definitional proof irrelevance is useful to avoid having to prove equalities explicitly.
 Consider a relation on two naturals asserting the usual less-than relation,
@@ -241,6 +231,15 @@ Alternatively, if propositions are definitionally proof irrelevant,
 the inequality proofs can be ignored,
 and rewriting the goal by $e$ is sufficient.
 
+\paragraph{Uniqueness of identity proofs.}
+Agda's default pattern matching behaviour admits
+that inhabitants of the same propositional equality
+are themselves propositionally equal,
+which is proven via defining \textbf{Axiom K}~\citep{axiomk},
+a computational eliminator for propositional equalities of the form $a \equiv a$.
+While not inherently part of Rocq's type theory,
+Axiom K is axiomatized in the standard library as \code{Coq.Logic.Eqdep.eq\_rect\_eq}.
+
 UIP is similarly useful to avoid reasoning about equalities between equalities
 when the only canonical proof of an equality is reflexivity,
 especially in settings without proof irrelevance.
@@ -250,10 +249,21 @@ In particular, if a type has decidable equality,
 \ie $(x \equiv y) \vee \neg (x \equiv y)$ for any given $x, y$ of that type,
 then its equalities are themselves equal~\citep{hedberg}.
 
-Naturally, not all types are proof-irrelevant,
-such as the booleans, since $\kw{true}$ and $\kw{false}$ are distinct.
-However, proving $\neg (\kw{true} \equiv \kw{false})$ requires strong elimination
-to lift the booleans to propositions of truthhood $\top$ and falsehood $\bot$.
+\paragraph{Strong elimination.}
+Also known as \emph{large} elimination,
+an element of an inductive datatype can be destructed or eliminated
+into a type at a larger universe.
+That is, a term whose type is in $\kw{Type}_i$
+can be eliminated to return a term whose type is in $\kw{Type}_j$
+for some $j > i$.
+For proofs of propositions in $\kw{Prop}$,
+large elimination corresponds to eliminating into any non-proposition.
+
+Strong elimination is necessary ingredient in discriminating constructors
+of proof-relevant datatypes, such as the booleans.
+While $\kw{true}$ and $\kw{false}$ are syntactically distinct,
+proving $\neg (\kw{true} \equiv \kw{false})$ requires lifting the booleans
+to propositions truthhood $\top$ and falsehood $\bot$.
 %
 \begin{align*}
   \mathit{lift} &: \kw{Bool} \to \kw{Prop} \\
@@ -267,43 +277,29 @@ given a proof of $\kw{true} \equiv \kw{false}$,
 $\top \equiv \bot$ holds by congruence over $\mathit{lift}$,
 across which the trivial proof $\kw{tt} : \top$ can be transported to $\bot$.
 
-Some of these extensions are hidden behind an option flag.
-To use strict $\kw{Prop}$,
-Rocq requires the flag \code{Allow StrictProp},
-while Agda requires the option \code{\{-\# OPTIONS -{}-prop \#-\}}.
-While not inherently part of Rocq's type theory,
-Axiom K is axiomatized in the standard library as \code{Coq.Logic.Eqdep.eq\_rect\_eq}.
-Many other axioms are included in standard libraries
-to further augment reasoning power;
-below are a few notable examples.
+\subsection{Axioms}
 
-\begin{itemize}[noitemsep,topsep=0pt]
-  \item \textbf{Function extensionality}
-    propositionally equates two functions if they are pointwise equal;
-    in Lean as \code{funext} and in Rocq as \code{functional\_extensionality}.
-  \item \textbf{Propositional extensionality}
-    propositionally equates two propositions if they are bi\"implicated;
-    in Lean as \code{propext} and in Rocq as \code{propositional\_extensionality}.
-    Propositional proof irrelevance is a consequence of propositional extensionality.
-  \item \textbf{Univalence}
-    asserts an equivalence between propositional equality and equivalence,
-    \ie given two types $A, B$,
-    the equivalence $(A \equiv B) \simeq (A \simeq B)$ holds~\citep{hott}.
-    There are several ways to define equivalence;
-    the idea is that it captures a propositionally proof-irrelevant isomorphism.
-  \item \textbf{Excluded middle}
-    asserts that all propositions are either true (inhabited) or false (uninhabited);
-    in Lean as \code{em} and in Rocq as \code{Coq.Logic.Classical\_Prop.classic}.
-    This is equivalent to several other principles,
-    including \textbf{double negation elimination}
-    ($\forall (A : \kw{Prop})\mathpunct{.} \neg \neg A \to A$)
-    and \textbf{Peirce's law}
-    ($\forall (A \; B : \kw{Prop})\mathpunct{.} ((A \to B) \to A) \to A$).
-  % \item \textbf{Choice}
-\end{itemize}
+Rocq, Lean, and Agda all have mechanisms for defining axioms or postulates,
+which are declarations of constants without definitions.
+Although not all axioms are consistent,
+there are many well-studied additions worth considering as extensions in their own right.
 
-Function extensionality, propositional extensionality, and univalence
-are principles that extend propositional equality such that more things are equal.
+\paragraph{Extensional principles.}
+Some models of type theory may semantically equate things
+that are not syntactically (either definitionally or propositionally) equal;
+extensional principles will add semantic equalities as propositional equalities.
+\emph{Function extensionality} equates two functions if they are pointwise equal.
+\emph{Propositional extensionality} equates two propositions if they are bi\"implicated.
+These axioms are found in standard libraries in Lean as \code{funext} and \code{propext},
+and in Rocq as \code{Logic.FunctionalExtensionality.functional\_extensionality}
+and \code{Logic.PropExtensionality.propositional\_extensionality}.
+A notable consequence of propositional extensionality is propositional proof irrelevance.
+
+\emph{Univalence} asserts an equivalence between propositional equality and equivalence,
+\ie given two types $A, B$,
+the equivalence $(A \equiv B) \simeq (A \simeq B)$ holds~\citep{hott}.
+There are several ways to define equivalence;
+the idea is that it captures a propositionally proof-irrelevant isomorphism.
 Univalence together with proof irrelevance implies propositional extensionality,
 since bi\"implicated propositions are isomorphic by irrelevance,
 and univalence gives an equality from the isomorphism.
@@ -343,16 +339,26 @@ and Cubical Agda~\citep{cubical-agda} for univalence,
 and observational type theory~\citep{ott,ott-now,ttobs,ccobs,cicobs}
 for function and propositional extensionality.
 
-Excluded middle, double negation elimination,
-and other equivalent propositions are \emph{classical} reasoning principles
-that do not hold intuitionistically.
-Nevertheless, because a large majority of mathematics is done classically,
+\paragraph{Classical principles.}
+There are a number of classical principles which do not hold intuitionistically.
+The most common is the principle of \emph{excluded middle} (EM),
+which asserts that all propositions are either true (inhabited) or false (uninhabited).
+It is found in Lean as \code{em} and in Rocq as \code{Logic.Classical\_Prop.classic}.
+EM is equivalent to several other principles,
+including \emph{double negation elimination} (DNE),
+$\forall (A : \kw{Prop})\mathpunct{.} \neg \neg A \to A$,
+and \emph{Peirce's law},
+$\forall (A \; B : \kw{Prop})\mathpunct{.} ((A \to B) \to A) \to A$.
+
+Because a large majority of mathematics is done classically,
 many communities mechanizing mathematics will freely use classical principles.
 In particular, Lean's mathematical library mathlib~\citep{mathlib}
 contains proofs that rely on classical axioms,
 and tactics such as \code{tauto} will automatically apply classical reasoning.
 There is work towards constructively integrating classical principles into type theory consistently,
 typically in the form of calculi with control operators~\citep{mu,mumu,dl,sr}.
+
+\subsection{Extensions and inconsistencies}
 
 One has to be careful that a chosen set of features and axioms
 do not render the type theory logically inconsistent and thus useless for proving.
@@ -487,7 +493,7 @@ Therefore, the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
 a type system that incorporates dependency tracking and dependent types,
 could be a suitable framework for tracking multiple type theories.
 
-\section{A Primer on DCOI} \label{sec:dcoi}
+\section{A primer on DCOI} \label{sec:dcoi}
 
 DCOI is a Pure Type System (PTS)~\citep{pts} augmented with dependency tracking~\cite{dcc}.
 An instantiation of DCOI's PTS rules and axioms governing how types and terms interact
@@ -600,7 +606,7 @@ since securer values will need to be compared as well instead of being ignored.
 Going down an observer level means more things are being hidden away,
 so more values will appear to be indistinguishable from one another.
 
-\section{Lattices of Type Theories} \label{sec:lattice}
+\section{Lattices of type theories} \label{sec:lattice}
 
 While the PTS rules and axioms of DCOI can be instantiated to produce different type systems,
 each instantiation, such as DCOI$^\omega$,
