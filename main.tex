@@ -517,7 +517,8 @@ $$A :^\HH \kw{Type} \vdash \lambda x^\LL \; y^\HH \mathpunct{.} x :^\LL
   A^\LL \to A^\HH \to A$$
 The concrete levels used here are low ($\LL$) and high ($\HH$) where $\LL < \HH$,
 though DCOI is general over any meet-semilattice.
-In the context of security flow, these levels correspond to low- and high-security computations
+In the context of information flow,
+these levels correspond to low- and high-security computations
 where low-security computations may not inspect the values of high-security ones.
 They can also be thought of in terms of computational irrelevance,
 where something marked as computationally irrelevant ($\HH$)
@@ -535,10 +536,11 @@ which is used in the type of the function.
 The intuition is that $A$ does not play a part in the run-time execution of the constant function,
 but is otherwise permitted to participate in compile-time type checking.
 
-There are a number of key aspects and properties of DCOI, covered shortly,
+Rather than irrelevance or information flow,
+the target application is extension tracking,
+where each dependency level corresponds to a set of added extensions.
+Relevant to this application are a number of key aspects and properties of DCOI
 that highlight how dependency tracking interacts with terms and typing.
-These are not comprehensive,
-but are relevant to the desired applications of DCOI in the next section.
 
 \paragraph{Relative relevance.}
 The intuition of computational relevance and irrelevance
@@ -619,8 +621,7 @@ While the PTS rules and axioms of DCOI can be instantiated to produce different 
 each instantiation, such as DCOI$^\omega$,
 is a fixed type system with a single set of terms and typing rules.
 Towards the goal of integrating granular feature tracking into type theory itself,
-this project poses the question:
-\emph{What if different dependency levels corresponded to different type theories?}
+the dependency levels of DCOI are instead mapped to different type theories.
 
 More precisely, to track extensions on top of a base type theory,
 we would begin with a bottom dependency level corresponding to this base.
@@ -628,7 +629,7 @@ Each new dependency level above bottom would contain one additional construct
 corresponding to a new feature or axiom.
 For instance, there could be an Axiom K eliminator that type checks
 only at a level for UIP and above,
-and there could be a builtin excluded middle axiom that type checks
+and there could be a built-in excluded middle axiom that type checks
 only at a level for classical reasoning and above.
 
 Because level annotations are part of contexts and typing judgements,
