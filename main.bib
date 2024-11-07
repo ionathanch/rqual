@@ -498,3 +498,55 @@
   pages     = {0--0},
   isbn      = {978-3-031-xxxxx-x},
 }
+
+@article{10.1145/2578855.2535883,
+author = {Casinghino, Chris and Sj\"{o}berg, Vilhelm and Weirich, Stephanie},
+title = {Combining proofs and programs in a dependently typed language},
+year = {2014},
+issue_date = {January 2014},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {49},
+number = {1},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/2578855.2535883},
+doi = {10.1145/2578855.2535883},
+abstract = {Most dependently-typed programming languages either require that all expressions terminate (e.g. Coq, Agda, and Epigram), or allow infinite loops but are inconsistent when viewed as logics (e.g. Haskell, ATS, Ωmega. Here, we combine these two approaches into a single dependently-typed core language. The language is composed of two fragments that share a common syntax and overlapping semantics: a logic that guarantees total correctness, and a call-by-value programming language that guarantees type safety but not termination. The two fragments may interact: logical expressions may be used as programs; the logic may soundly reason about potentially nonterminating programs; programs can require logical proofs as arguments; and "mobile" program values, including proofs computed at runtime, may be used as evidence by the logic. This language allows programmers to work with total and partial functions uniformly, providing a smooth path from functional programming to dependently-typed programming.},
+journal = {SIGPLAN Not.},
+month = jan,
+pages = {33–45},
+numpages = {13},
+keywords = {termination, general recursion, dependent types}
+}
+
+@inproceedings{lambda-theta,
+  author    = {Casinghino, Chris and Sj\"{o}berg, Vilhelm and Weirich, Stephanie},
+  title     = {{Combining proofs and programs in a dependently typed language}},
+  year      = 2014,
+  isbn      = {9781450325448},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2535838.2535883},
+  doi       = {10.1145/2535838.2535883},
+  booktitle = {Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+  pages     = {33--45},
+  numpages  = 13,
+  location  = {San Diego, California, USA},
+  series    = {POPL '14}
+}
+
+@inproceedings{sep3,
+  author    = {Kimmell, Garrin and Stump, Aaron and Eades, Harley D. and Fu, Peng and Sheard, Tim and Weirich, Stephanie and Casinghino, Chris and Sj\"{o}berg, Vilhelm and Collins, Nathan and Ahn, Ki Yung},
+  title     = {{Equational reasoning about programs with general recursion and call-by-value semantics}},
+  year      = 2012,
+  isbn      = {9781450311250},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2103776.2103780},
+  doi       = {10.1145/2103776.2103780},
+  booktitle = {Proceedings of the Sixth Workshop on Programming Languages Meets Program Verification},
+  pages     = {15--26},
+  numpages  = 12,
+  location  = {Philadelphia, Pennsylvania, USA},
+  series    = {PLPV '12}
+}

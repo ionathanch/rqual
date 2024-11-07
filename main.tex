@@ -659,16 +659,30 @@ is an example of a concrete lattice of theories,
 where the arrows point towards the greater theory
 and indicate the direction in which definitions can be raised.
 
-One condition on the individual theories is that they must each be logically consistent.
+Following the rules of DCOI,
+each individual theory must each be logically consistent.
 If an inconsistency exists at any theory,
 by the elimination of higher falsehoods,
 the inconsistency will propagate to all lower theories, including the bottom theory.
 Then by subsumption, the inconsistency at the bottom theory
 can be raised to propagate to all higher theories,
 and the entire lattice will be inconsistent.
-This means that any theory that features nontermination will not be permitted.
+This means that if eliminating falsehoods works exactly as in DCOI,
+any theory that features nontermination will not be permitted.
 
-Another catch is that a theory whose extension is a new definitional equality
+As the goal is to exclude incompatible extensions from a proof assistant,
+disallowing logically inconsistent theories is a desirable trait.
+Nevertheless, there may be a few ways to modify falsehood elimination to permit them.
+One way is to instead disallow eliminating falsehoods to lower levels,
+only to the same level.
+Another is to take ideas from works from the Trellys project,
+such as $\lambda^\theta$~\citep{lambda-theta} and Sep$^3$~\citep{sep3},
+and impose a value or termination restriction on falsehoods being eliminated.
+If the falsehood in an inconsistent theory is nonterminating or not a value,
+then it cannot be eliminated at all,
+preventing its propagating to lower theories.
+
+One catch is that a theory whose extension is a new definitional equality
 (\ie a new rule for indistinguishability) cannot be contained within its level.
 Even if that equality is defined for a given observer level,
 it will hold for all lower observer levels by downgrading,
