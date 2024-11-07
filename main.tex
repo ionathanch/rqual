@@ -463,14 +463,17 @@ there is plenty of room of improvement;
 I have identified three shortcomings these systems.
 %
 \begin{itemize}
-  \item There is no way of safeguarding against a feature or an axiom;
-    that is, it cannot be guaranteed generally that a particular definition
-    does \emph{not} use something.
-    If a definition can be guaranteed not to use some given feature,
-    then it is safe to be used by other definitions
-    that are incompatible with that feature.
+  \item There is no way of asserting against an extension;
+    that is, there is no general mechanism to tell the type checker to fail
+    if a particular definition uses some feature or axiom.
+    Such an assertion would guarantee it safe to be used by other definitions
+    that use an incompatible extension.
     For instance, ensuring that a proof does not use Axiom K
     means that it may be used by another proof that does use univalence.
+    In this specific case, Agda does have the \code{-{}-without-K} flag for this purpose,
+    but few options have a corresponding anti-option.
+    Meanwhile, Rocq and Lean's axiom printing mechanism
+    does not modify type checking behaviour.
   \item The scope of feature flags is too coarse.
     They range from project-level compiler flags
     down to module-level option flags,
@@ -482,8 +485,11 @@ I have identified three shortcomings these systems.
     even if that particular definition does not depend on any features at all.
   \item Tracking features and axioms is only a compiler tool
     and is not formally described along with the underlying type theories themselves.
-    Furthermore, there is no formal description of the interactions between
-    the different theories that result from including various features and axioms.
+    While a description exists for a set of compatible theories
+    by taking their greatest encompassing theory,
+    this is not the case when there are two incompatible theories that exist side by side.
+    Such theories may be described independently,
+    but would be incomplete descriptions of the entire core of a proof assistant.
 \end{itemize}
 
 An ideal system for enabling and disabling features and axioms, then,
