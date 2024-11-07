@@ -32,6 +32,8 @@
 \newcommand{\HH}{\mathsf{H}}
 \newcommand{\LL}{\mathsf{L}}
 \renewcommand{\SS}{\mathsf{S}}
+\newcommand{\oo}{\mathsf{o}}
+\newcommand{\ii}{\mathsf{i}}
 
 \begin{document}
 \maketitle
@@ -820,18 +822,52 @@ it may be reasonable to instead explore a more StraTT-like structure.
 
 \section{Related work} \label{sec:related}
 
-\subsection{Two-level type theory}
+\subsection{Multi-system frameworks}
 
-\subsection{Modal type theory}
+\paragraph{Two-level type theory.}
+The most similar work to extension tracking is two-level type theory (2LTT)~\citep{2ltt}.
+It consists of an inner homotopical type theory with univalence
+and an outer intensional type theory with UIP,
+along with a conversion operation $\mathop{\uparrow} \cdot$ from the inner theory to the outer.
+The inner and outer type theories have independent type formers,
+including separate inner (path) equality types $\cdot \equiv^\ii \cdot$
+and outer (strict) equality types $\cdot \equiv^\oo \cdot$.
+Importantly, converting an inner equality does \emph{not} yield the outer equality type;
+otherwise, univalence on inner equalities could be converted to univalence on outer equalities,
+which would contradict UIP of the outer equality.
+
+These inner and outer levels are different from dependency levels in DCOI,
+where all levels share the same type formers,
+and a lower equality can be raised to a higher equality by subsumption.
+In particular, if a lattice of type theories includes one that supports UIP,
+then that level will prove that proofs of the same equality at \emph{all} levels are themselves equal.
+Meanwhile, in 2LTT, UIP only holds for proofs the outer equality
+and not for converted proofs of the inner equality.
+
+The conversion operator can be thought of as an explicit subsumption,
+and how it interacts with the inner and outer equalities
+is similar to how DCOI's propositional equality interacts with indistinguishability
+at lower and higher levels.
+To demonstrate, given two inner terms $x, y$,
+the implication $\mathop{\uparrow} x \equiv^\oo \mathop{\uparrow} y \to x \equiv^\ii y$
+holds in 2LTT while the converse generally does not.
+Similarly, in DCOI, $x \equiv^\HH y \to x \equiv^\LL y$ holds by downgrading
+while the converse also generally does not.
+
+\paragraph{The Trellys project.}
+Instead of combining multiple type theories,
+the Trellys project focussed on combining dependently-typed logical reasoning
+with (potentially nonterminating) functional programming.
+The main works within the project are $\lambda^\theta$~\citep{lambda-theta},
+which classifies typing judgements of a single language into logical and programmatic fragments;
+Sep$^3$~\citep{sep3}, which syntactically separate proofs from programs;
+and Nax~\citep{nax}, which augments dependent types with Mendler-style recursion schemes.
+Of these three, DCOI is closest to $\lambda^\theta$,
+whose logical and programmatic classifications are similar to DCOI's dependency levels.
 
 \subsection{Proof assistants}
 
 \subsection{Applications of extensions}
-
-% Related work:
-% * 2LTT & modalities
-% * examples of large mechanizations
-% * Trellys uses modalities to track general recursion
 
 \section{Conclusion}
 
