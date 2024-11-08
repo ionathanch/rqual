@@ -885,6 +885,29 @@ so this proof technique will not extend to DCOI or any variant with a universe h
 
 \subsection{Proof assistants}
 
+\Cref{sec:extensions} broadly covers a number of optional features
+and common axioms in Rocq, Lean, and Agda.
+There are many other proof assistants of varying relevance and popularity
+that were not discussed above.
+
+Idris 2~\citep{idris2} is a dependently typed programming language with partiality.
+Definitions can be marked as \code{total}, \code{covering}, or \code{partial};
+in principle, totality ensures consistency,
+covering ensures type safety while allowing divergence,
+and partiality does not ensure either.
+Because partiality subsumes covering subsumes totality,
+these modifiers can also be thought of as members of a lattice.
+Idris 2 is closer to $\lambda^\theta$ than to DCOI,
+especially because it is also call by value,
+and the partiality modifier is designed so that
+diverging terms can appear in types and be reasoned about
+while not being reduced during type checking.
+Although Idris 2 is based on Quantitative Type Theory~\citep{qtt},
+there is no formal description of its core type system that describes all of its features,
+especially as it is a rapidly evolving language.
+
+F$^\star$~\citep{fstar}
+
 \subsection{Applications of extensions}
 
 \section{Conclusion}
