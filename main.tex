@@ -862,8 +862,26 @@ The main works within the project are $\lambda^\theta$~\citep{lambda-theta},
 which classifies typing judgements of a single language into logical and programmatic fragments;
 Sep$^3$~\citep{sep3}, which syntactically separate proofs from programs;
 and Nax~\citep{nax}, which augments dependent types with Mendler-style recursion schemes.
+
 Of these three, DCOI is closest to $\lambda^\theta$,
 whose logical and programmatic classifications are similar to DCOI's dependency levels.
+Because the logical fragment is subsumed within the programmatic fragment,
+the additional features found in the programmatic fragment can be thought of
+as an extension of the logical one.
+Notable features of the extension include isorecursive types and unrestricted recursion,
+allowing for nonterminating programs.
+Normalization of the logical fragment is ensured by
+only allowing boxed programs to be applied to its functions,
+only allowing unboxing of values,
+and restricting reduction to call by value.
+While the boxing mechanism is similar to domain level annotations in DCOI,
+the value restrictions are specific to handling presence of potential divergence.
+
+The proof of normalization uses a step-indexed logical relation,
+where stepping only occurs in the programmatic fragment.
+However, $\lambda^\theta$ only has a single type universe with no type polymorphism,
+which the logical relation takes advantage of,
+so this proof technique will not extend to DCOI or any variant with a universe hierarchy.
 
 \subsection{Proof assistants}
 
