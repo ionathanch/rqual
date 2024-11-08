@@ -883,12 +883,11 @@ However, $\lambda^\theta$ only has a single type universe with no type polymorph
 which the logical relation takes advantage of,
 so this proof technique will not extend to DCOI or any variant with a universe hierarchy.
 
-\subsection{Proof assistants}
+\subsection{Other proof assistants}
 
 \Cref{sec:extensions} broadly covers a number of optional features
 and common axioms in Rocq, Lean, and Agda.
-There are many other proof assistants of varying relevance and popularity
-that were not discussed above.
+There are many other proof assistants of varying relevance not discussed above.
 
 Idris 2~\citep{idris2} is a dependently typed programming language with partiality.
 Definitions can be marked as \code{total}, \code{covering}, or \code{partial};
@@ -906,9 +905,16 @@ Although Idris 2 is based on Quantitative Type Theory~\citep{qtt},
 there is no formal description of its core type system that describes all of its features,
 especially as it is a rapidly evolving language.
 
-F$^\star$~\citep{fstar}
-
-\subsection{Applications of extensions}
+F$^\star$~\citep{fstar} is a proof assistant with dependency tracking for different effects.
+Its dependency levels include a \code{Tot} level for total programs,
+and a \code{Dv} level above it for potentially diverging programs.
+In contrast to $\lambda^\theta$,
+the total fragment of F$^\star$ may not refer to the diverging fragment,
+so the proof of weak normalization of the total fragment
+involves a logical relation that does not consider levels above \code{Tot}.
+All the effects in F$^\star$ are implemented as indexed monads,
+which get compiled away to the new core calculus TotalF$^\star$~\citep{total-fstar};
+divergence aside, effects do not extend the internal type system.
 
 \section{Conclusion}
 
