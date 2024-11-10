@@ -24,6 +24,7 @@
 \crefformat{question}{#2Question~#1#3}
 \Crefformat{question}{#2Question~#1#3}
 
+\newcommand{\note}[1]{\textcolor{red}{[#1]}}
 \newcommand{\ie}{\textit{i.e.}\@\xspace}
 \newcommand{\eg}{\textit{e.g.}\@\xspace}
 \newcommand{\apost}{\textit{a posteriori}\@\xspace}
@@ -48,6 +49,7 @@
   Furthermore, the way proof assistants currently enable extensions
   can be too coarse and imprecise when it comes to
   guarantees about the features a top-level definition may use.
+  \note{Needs to be rewritten to reflect new introduction.}
 
   A first step towards a framework of extensions could use
   the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi}
@@ -109,46 +111,59 @@ In practice, a proof assistant doesn't implement merely one type theory,
 but a whole host of them, as they will include language extensions
 that augment or modify its reasoning power.
 
-These type theoretic extensions can consist of additional typing rules
-or new constants with or without extra equational behaviour (the latter being axioms).
-Each extension enabled can be considered a separate theory altogether,
-as they may embody semantically different reasoning principles.
+These type theoretic extensions can consist of additional typing rules,
+constructs, and/or definitional equalities.
+Because each extension embodies semantically distinct reasoning principles,
+enabling an extension results in a separate theory altogether.
 Furthermore, there exist extensions that are mutually incompatible
-because together they would violate logical consistency of the type theory.
+because together they violate logical consistency.
+For instance, \emph{uniqueness of identity proofs},
+which propositionally equates all proofs of the same equality,
+is incompatible with \emph{univalence},
+which adds additional and provably distinct proofs of equality.
 In \cref{sec:extensions},
-I describe a few such extensions found in select proof assistants,
+I describe these extensions and more found in select proof assistants,
 and the ways some combinations are incompatible.
 
-Thus when proof assistants provide mechanisms for language extensions,
-they are careful to track the usage of these extensions to rule out inconsistencies.
-The tracking done by their type checkers is \emph{external} to the type system:
+Thus proof assistants are careful to track
+the usage of language extensions to rule out inconsistencies.
+However, the tracking done by their type checkers is \emph{external} to the type system:
 within the language itself,
 one cannot assert that a definition is permitted to depend on a particular extension,
-nor that it is guaranteed \emph{not} to use it.
-Furthermore, while each extension may have been independently verified to be consistent,
-as well as some common combinations of extensions,
-there are no formal descriptions of interactions between parts of code
-that use different sets of extensions.
-Ultimately, what we are missing is a framework for describing
-fine-grained control of proofs and programs across multiple type theories.
+nor that it is prohibited from using an extension.
+Furthermore, given two incompatible extensions,
+a definition in one extension's theory may not be used at all
+in the another extension's theory, not even just in a type.
+This means one theory cannot be used as a metatheory
+to prove properties about definitions in the other theory
+if those theories are incompatible.
+For instance, considering classical axioms as a language extension,
+one would not be able to explore what is constructively proveable
+about classical principles.
 
-Luckily, there do exist frameworks for describing fine-grained control
-of proofs and programs across multiple \emph{dependency levels},
-which exist within the same type system,
-but are stratified by some hierarchical structure
-of what can be thought of intuitively as permission levels.
-In particular, I have worked on the Dependent Calculus of Indistinguishability
-(DCOI)~\citep{dcoi} and its variant DCOI$^\omega$~\citep{dcoi-omega},
-the latter of which is a type theory with dependency tracking,
-whose key properties I describe in \cref{sec:dcoi}.
+Ultimately, what is missing is a framework for describing
+fine-grained control of proofs and programs across multiple type theories,
+where even incompatible theories can interact in interesting ways.
+These properties are reminiscent of type systems with \emph{dependency analysis}.
+Here, terms are stratified by \emph{dependency levels},
+which can be thought of intuitively as permission levels tracking permitted usages.
+Even if we do not have access to a particular level,
+terms at that level can still be manipulated and reasoned about
+as long as they are not inspected or evaluated.
+\note{Is this too vague?}
 
+I have worked on a type system with dependency tracking,
+the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
+along with its variant DCOI$^\omega$~\citep{dcoi-omega},
+which is a logically consistent type theory.
 DCOI could potentially be used as a basis for a framework
 which internalizes extension tracking by stratifying
 their corresponding type theories into hierarchies of dependency levels,
 where compatibility between extensions maps to the intuitive notion of permission.
-In \cref{sec:lattice}, I speculate on the details of this mapping,
+I describe the key properties of DCOI relevant for this application in \cref{sec:dcoi}.
+I then speculate on the details of this mapping,
 lay out the objectives for such a framework,
-and list possible first steps towards accomplishing them.
+and list possible first steps towards accomplishing them in \cref{sec:lattice}.
 There is much prior and related work that this project relies on and relates to,
 which I divide into work I have personally contributed to (\cref{sec:prior})
 and other work in this space (\cref{sec:related}).
