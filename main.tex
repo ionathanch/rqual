@@ -185,9 +185,10 @@ some of which are hidden behind option flags.
 
 \paragraph{Impredicativity.}
 Rocq and Lean, being based on CIC,
-feature a universe $\kw{Prop}$ of propositions such that
-a quantification (\ie dependent function type) $\forall (x : A) \mathpunct{.} B$
-is a proposition if $B$ is a proposition,
+feature a universe $\kw{Prop}$ of propositions.
+This universe is \emph{impredicative},
+meaning that a quantification (\ie dependent function type)
+$\forall (x : A) \mathpunct{.} B$ is a proposition if $B$ is a proposition,
 regardless of the universe in which $A$ lives,
 which may be larger than $\kw{Prop}$.
 Inductive types may also be defined in $\kw{Prop}$,
@@ -198,17 +199,20 @@ Such inductives are said to be \emph{large}.
 Impredicativity allows for self-referential propositions by quantifying over $\kw{Prop}$.
 For instance, given a proof that all propositions imply their double negation,
 $$\mathit{dn}: \forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P,$$
-the double negation of this proposition itself holds as well.
+the double negation of this proposition itself holds as well by self-application.
 $$\mathit{dn} \; (\forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P) \; \mathit{dn} : \neg \neg (\forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P)$$
-In the predicative setting, a quantification over a universe $\kw{Type}_0 : \kw{Type}_1$
-itself has type $\kw{Type}_1$, and in particular,
+In contrast, in the predicative setting,
+a quantification over a universe $\kw{Type}_0 : \kw{Type}_1$ itself has type $\kw{Type}_1$,
+and in particular,
 $$\Pi (A : \kw{Type}_0)\mathpunct{.} A \to \neg \neg A : \kw{Type}_1,$$
 so an element of this type may not be applied to the type itself.
 
 \paragraph{Definitional proof irrelevance.}
-The inhabitants of propositions in Lean are definitionally equal
-and thus treated as interchangeable during type checking;
-these propositions are said to be \emph{strict}.
+A universe of propositions is said to be \emph{strict}
+when the inhabitants of its propositions are definitionally equal
+(\ie proof irrelevant)
+and thus treated as interchangeable during type checking.
+Lean's $\kw{Prop}$ is always strict, while
 Rocq has a separate $\kw{SProp}$ universe of proof-irrelevant propositions,
 and Agda has a predicative hierarchy $\kw{Prop}_i$ of such universes \citep{sprop}.
 To use strict $\kw{Prop}$,
@@ -231,13 +235,20 @@ A desirable property of bounded naturals is that
 two bounded naturals are equal if their contained naturals are equal.
 %
 \begin{align*}
-  \mathit{eqBNat} &: \forall (m : \kw{Nat}) (b_1 \; b_2 : \kw{BNat} \; m)\mathpunct{.}
+  \mathit{eqBNat} &: \forall (m : \kw{Nat}) \; (b_1 \; b_2 : \kw{BNat} \; m) \mathpunct{.}
     \mathit{getNat} \; m \; b_1 \equiv \mathit{getNat} \; m \; b_2 \to b_1 \equiv b_2
 \end{align*}
 %
 If we try to prove this by destructing $b_1$ and $b_2$ as
 $(\mathit{bnat} \; n_1 \; m \; p_1)$ and $(\mathit{bnat} \; n_2 \; m \; p_2)$,
-while we have an equality $e : n_1 \equiv n_2$ by reduction of $\mathit{getNat}$,
+$\mathit{getNat} \; m \; b_1$ and $\mathit{getNat} \; m \; b_2$ reduce to $n_1$ and $n_2$.
+%
+\begin{align*}
+  \mathit{eqBNat} \; m \; (\mathit{bnat} \; n_1 \; m \; p_1) \; (\mathit{bnat} \; n_2 \; m \; p_2)
+    &: n_1 \equiv n_2 \to \mathit{bnat} \; n_1 \; m \; p_1 \equiv \mathit{bnat} \; n_2 \; m \; p_2
+\end{align*}
+%
+While we have an equality $n_1 \equiv n_2$,
 we do \emph{not} have a proof of $p_1 \equiv p_2$%
 \footnote{Technically, this requires a proof of the equality
 where $p_1$ has been transported across the equality $e$
@@ -245,22 +256,39 @@ so that it has the same type as $p_2$.}.
 Depending on how $\cdot \le \cdot$ is implemented,
 it may be possible to prove propositionally that any two inequality proofs are equal.
 Alternatively, if propositions are definitionally proof irrelevant,
-the inequality proofs can be ignored,
-and rewriting the goal by $e$ is sufficient.
+the inequality proofs can be ignored.
+Then rewriting the goal by the given equality is sufficient
+for it to be proven by reflexivity.
+%
+\begin{align*}
+  \mathit{eqBNat} \; m \; (\mathit{bnat} \; n_1 \; m \; p_1) \; (\mathit{bnat} \; n_2 \; m \; p_2) \; e \;
+    &: \mathit{bnat} \; n_1 \; m \; p_1 \equiv \mathit{bnat} \; n_2 \; m \; p_2 \\
+    &\coloneqq \kw{rewrite} \; e \; \kw{in} \; \kw{refl}
+\end{align*}
 
-\paragraph{Uniqueness of identity proofs.}
-Agda's default pattern matching behaviour admits
-that inhabitants of the same propositional equality
-are themselves propositionally equal,
-which is proven via defining \textbf{Axiom K}~\citep{axiomk},
-a computational eliminator for propositional equalities of the form $a \equiv a$.
+\paragraph{Uniqueness of identity proofs (UIP).}
+The \emph{uniqueness of identity proofs} (UIP)
+asserts that inhabitants of the same propositional equality
+are themselves propositionally equal.
+It can be proven using \emph{Axiom K}~\citep{axiomk},
+a computational eliminator for propositional equalities of type $a \equiv a$.
+%
+\begin{align*}
+  &K : \forall (A : \kw{Type}) \; (a : A) \; (P : a \equiv a \to \kw{Prop}) \; (p : a \equiv a) \mathpunct{.}
+    P \; \kw{refl} \to P \; p \\
+  &K \; A \; a \; P \; \kw{refl} \rightsquigarrow \kw{refl}
+\end{align*}
+%
+Agda's default pattern matching behaviour,
+which permits matching on an equality of $a \equiv a$ as reflexivity,
+admits a proof of UIP as well as defining Axiom K.
 While not inherently part of Rocq's type theory,
-Axiom K is axiomatized in the standard library as \code{Coq.Logic.Eqdep.eq\_rect\_eq}.
+Axiom K is axiomatized in the standard library as \code{Logic.Eqdep.eq\_rect\_eq}.
 
 UIP is similarly useful to avoid reasoning about equalities between equalities
 when the only canonical proof of an equality is reflexivity,
 especially in settings without proof irrelevance.
-While UIP does augment the reasoning power of the type theory,
+While UIP augments the reasoning power of the type theory,
 there are inductive types whose equality proofs are already propositionally equal.
 In particular, if a type has decidable equality,
 \ie $(x \equiv y) \vee \neg (x \equiv y)$ for any given $x, y$ of that type,
