@@ -187,7 +187,7 @@ some of which are hidden behind option flags.
 Rocq and Lean, being based on CIC,
 feature a universe $\kw{Prop}$ of propositions.
 This universe is \emph{impredicative},
-meaning that a quantification (\ie dependent function type)
+meaning that a universal quantification (\ie dependent function type)
 $\forall (x : A) \mathpunct{.} B$ is a proposition if $B$ is a proposition,
 regardless of the universe in which $A$ lives,
 which may be larger than $\kw{Prop}$.
@@ -206,6 +206,20 @@ a quantification over a universe $\kw{Type}_0 : \kw{Type}_1$ itself has type $\k
 and in particular,
 $$\Pi (A : \kw{Type}_0)\mathpunct{.} A \to \neg \neg A : \kw{Type}_1,$$
 so an element of this type may not be applied to the type itself.
+
+Dually to universal quantification,
+we can define existential quantification $\exists (x : A) \mathpunct{.} B$
+over types $A$ in larger universes as a large inductive proposition,
+\ie a dependent pair type in $\kw{Prop}$.
+This enables us to state, for example,
+the surjectivity of a function over the naturals as a predicate,
+even though the naturals are not a proposition.
+%
+\begin{align*}
+  \mathit{surj} &: (\kw{Nat} \to \kw{Nat}) \to \kw{Prop} \\
+  \mathit{surj} &\coloneqq \lambda f \mathpunct{.}
+    \forall (y : \kw{Nat}) \mathpunct{.} \exists (x : \kw{Nat}) \mathpunct{.} f \; x \equiv y
+\end{align*}
 
 \paragraph{Definitional proof irrelevance.}
 A universe of propositions is said to be \emph{strict}
@@ -300,7 +314,7 @@ into a type at a larger universe is known as \emph{strong} or \emph{large} elimi
 That is, a term whose type is in $\kw{Type}_i$
 is eliminated to return a term whose type is in $\kw{Type}_j$
 for some $j > i$.
-For proofs of propositions in $\kw{Prop}$,
+For proofs of inductive propositions in $\kw{Prop}$,
 this includes eliminating into any non-proposition type.
 
 Strong elimination is a necessary ingredient in discriminating constructors
