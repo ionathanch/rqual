@@ -290,7 +290,7 @@ a computational eliminator for propositional equalities of type $a \equiv a$.
 \begin{align*}
   &K : \forall (A : \kw{Type}) \; (a : A) \; (P : a \equiv a \to \kw{Prop}) \; (p : a \equiv a) \mathpunct{.}
     P \; \kw{refl} \to P \; p \\
-  &K \; A \; a \; P \; \kw{refl} \rightsquigarrow \kw{refl}
+  &K \; A \; a \; P \; \kw{refl} \; d \rightsquigarrow d
 \end{align*}
 %
 Agda's default pattern matching behaviour,
@@ -701,29 +701,29 @@ so more values will appear to be indistinguishable from one another.
 
 \section{Lattices of type theories} \label{sec:lattice}
 
-While the PTS rules and axioms of DCOI can be instantiated to produce different type systems,
-each instantiation, such as DCOI$^\omega$,
-is a fixed type system with a single set of terms and typing rules.
-Towards the goal of integrating granular feature tracking into type theory itself,
-the dependency levels of DCOI are instead mapped to different type theories.
-
-More precisely, to track extensions on top of a base type theory,
-we would begin with a bottom dependency level corresponding to this base.
+To track extensions on top of a base type theory,
+we begin with a bottom dependency level corresponding to this base.
 Each new dependency level above bottom would contain one additional construct
 corresponding to a new feature or axiom.
-For instance, there could be an Axiom K eliminator that type checks
+For instance, there could be a K eliminator that type checks
 only at a level for UIP and above,
-and there could be a built-in excluded middle axiom that type checks
+or a built-in excluded middle axiom that type checks
 only at a level for classical reasoning and above.
+%
+\begin{align*}
+  \kw{K} \; P \; p \; d :^{\kw{uip}} P \; p &&
+  \kw{em} \; A :^{\kw{cl}} A \vee \neg A
+\end{align*}
+\vspace{-1.5\baselineskip}
 
 Because level annotations are part of contexts and typing judgements,
 when a particular definition is safe to use is specified with precision,
-which guarantees that a particular definition never exploits an extension without permission.
+guaranteeing that a particular definition never exploits an extension without permission.
 A definition that can be typed at the bottom level
 would be safe to use at all levels by subsumption,
 and guaranteed to never employ, say, classical reasoning.
 Indistinguishability reflects this guarantee, as it asserts the property that
-uses of values from higher forbidden theories can only trivial,
+uses of values from higher forbidden theories can only be trivial,
 such as ignoring the value or passing it around uninspected.
 
 As dependency levels form a meet-semilattice,
@@ -743,8 +743,20 @@ is an example of a concrete lattice of theories,
 where the arrows point towards the greater theory
 and indicate the direction in which definitions can be raised.
 
+The property that the type of a term can itself be well typed at any other level
+permits proving propositions about an incompatible theory
+without causing an inconsistency.
+For example, we can assert the computational behaviour of the K eliminator
+even in a theory with univalence.
+%
+\vspace{-\baselineskip}
+\begin{align*}
+  \kw{refl} :^{\kw{ua}} \kw{K} \; P \; \kw{refl} \; d \equiv^{\kw{uip}} d
+\end{align*}
+\vspace{-1.5\baselineskip}
+
 Following the rules of DCOI,
-each individual theory must each be logically consistent.
+each individual theory must be logically consistent.
 If an inconsistency exists at any theory,
 by the elimination of higher falsehoods,
 the inconsistency will propagate to all lower theories, including the bottom theory.
@@ -774,12 +786,7 @@ and the extension will be available to all lower theories.
 This effect cannot be mitigated using restrictive premises,
 as violating downgrading will violate many other desirable properties,
 including transitivity of definitional equality~\citep{dcoi-omega}.
-
-An unusual property of using DCOI for tracking theories
-is that the type of a term may itself be well typed
-within a different theory from that of the term.
-It's unclear what it means when, for instance,
-a term in the base theory can be assigned a type that uses classical principles.
+\note{What \emph{does} this mean for $\kw{SProp}$??}
 
 \subsection{Objectives}
 
@@ -798,17 +805,17 @@ This project should answer the following questions:
     (\eg function and propositional extensionality, excluded middle).
   \item \label[question]{item:model}
     How would a particular lattice of theories be modelled
-    to show desirable properties such as logical consistency?
+    to show logical consistency?
     Ideally, the technique used to model a particular lattice
     should be broadly applicable and sufficiently extensible
     to be applied to a different lattice without redoing all the work,
     so that adding more extensions remains sustainable.
-  \item \label[question]{item:properties}
-    Are there properties resulting from using DCOI
-    that aren't expected of a feature tracking system,
-    such as a term and its type using different sets of features?
-    What are the consequences of these properties,
-    and are they beneficial or detrimental?
+  \item \label[question]{item:applications}
+    What are useful applications of being able to freely refer to other theories?
+    The previous example that referred to the K eliminator, while true,
+    is stating a trivial fact that is already provable within the UIP theory.
+    Are there meaningful theorems about one theory that cannot be proven in that theory,
+    but can be proven in a different yet potentially incompatible theory?
 \end{enumerate}
 
 To answer these questions, the project would be divided into two portions.
@@ -826,7 +833,7 @@ and Lean\footnote{\url{https://leanprover-community.github.io/mathlib4_docs/}}
 are good sources for inspiration,
 as many of their files use the features and axioms mentioned in \cref{sec:extensions}.
 An implementation would also serve to verify which extensions are indeed invalid
-by demonstrating the inconsistencies or ineffectivities they yield.
+by demonstrating the inconsistencies they yield.
 
 With an implementation, useability concerns can be explored,
 such as level inference.
@@ -835,6 +842,8 @@ is an unreasonable burden on a practical proof assistant user,
 and it may be possible to infer the annotations
 either based on the syntactic constructs used
 or on what set of features are required for successful type checking.
+\note{TODO: More details?? This should also answer \cref{item:applications}
+by being able to write and type check proofs.}
 
 The second portion is a formalized and ideally mechanized proof of consistency.
 Because consistency is a semantic property and depends on the strength
@@ -862,14 +871,14 @@ While there exist syntactic models of other type theories \citep{sprop,ghosts}
 with notions of irrelevance, which is one application of indistinguishability,
 a syntactic model of dependency tracking with dependent types is unexplored.
 
-The process of accomplishing these two portions of the project
-should answer \cref{item:properties},
-either by the implementation revealing unexpected examples that can or cannot be type checked,
-or by metatheoretical properties that hold based on the modelling technique chosen.
-Only once these properties are revealed will we know what further work can be done,
-from augmenting the implementation closer to a practical proof assistant,
-to proving more complex theorems like normalization and decidability of type checking,
-or proving consistency for a larger lattice.
+% The process of accomplishing these two portions of the project
+% should answer \cref{item:properties},
+% either by the implementation revealing unexpected examples that can or cannot be type checked,
+% or by metatheoretical properties that hold based on the modelling technique chosen.
+% Only once these properties are revealed will we know what further work can be done,
+% from augmenting the implementation closer to a practical proof assistant,
+% to proving more complex theorems like normalization and decidability of type checking,
+% or proving consistency for a larger lattice.
 
 \section{Prior work} \label{sec:prior}
 
@@ -891,11 +900,13 @@ so this work does not appear in the final paper.
 
 Outside of DCOI, I have worked on Stratified Type Theory (StraTT)~\citep{stratt},
 which annotates typing judgements similarly to dependency tracking,
-but the annotations are universe levels,
-and restrictions on what levels may be used where enforces consistency
-where traditionally it is enforced by disallowing type-in-type.
-In other words, instead of stratifying universes into a hierarchy,
-typing judgements themselves are stratified.
+but the annotations are universe levels.
+Instead of stratifying universes into a hierarchy,
+typing judgements themselves are stratified,
+and there is a single universe whose type is itself.
+To ensure consistency in the presence of type-in-type,
+dependent functions may only quantify over types at strictly lower levels,
+which enforces predicativity.
 Although StraTT is not a dependency tracking system in the same way DCOI is,
 it demonstrates that there may be multiple ways to retain usage information
 that enforces desired properties such as consistency or irrelevance.
@@ -963,7 +974,7 @@ The proof of normalization uses a step-indexed logical relation,
 where stepping only occurs in the programmatic fragment.
 However, $\lambda^\theta$ only has a single type universe with no type polymorphism,
 which the logical relation takes advantage of,
-so this proof technique will not extend to DCOI or any variant with a universe hierarchy.
+so this proof technique does not extend to DCOI or any variant with a universe hierarchy.
 
 \subsection{Other proof assistants}
 
