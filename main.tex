@@ -448,8 +448,7 @@ below are a few such combinations.
 \begin{itemize}[noitemsep,topsep=0pt]
   \item Strong elimination is inconsistent for large impredicative inductives.
     \citet{strong-pair} show that impredicative dependent pairs with pair projections,
-    which can correspond to strong elimination,
-    are inconsistent.
+    which correspond to strong elimination, are inconsistent.
     \citet{trees} also demonstrates the inconsistency with an inductive type $U$
     with a single constructor of type
     $\forall (X : \kw{Prop})\mathpunct{.} (X \to U) \to U$.
@@ -493,7 +492,7 @@ below are a few such combinations.
 \end{figure}
 
 \Cref{fig:lattice} illustrates some of these relationships between extensions.
-The arrows point from one theory to a greater encompassing theory;
+The arrows point from one theory to a strictly more expressive one;
 for instance, a theory with propositional extensionality extends the equalities
 of a theory with a universe of propositions,
 and a theory with univalence can derive function extensionality.
@@ -501,37 +500,36 @@ At the top of the graph, the dotted arrows indicate
 the incompatibility of a theory that implies UIP with one that contains univalence:
 there is no possible encompassing theory.
 
-To prevent inconsistencies, features may be hidden behind option flags,
-or disallowed entirely.
-Rocq, Lean, and Agda all disallow strong elimination for inductive propositions
-in $\kw{Prop}$ and $\kw{SProp}$,
-with the exception of \emph{syntactic subsingletons},
+To prevent inconsistencies, proof assistants hide features behind option flags,
+or disallow them entirely.
+Rocq, Lean, and Agda generally disallow strong elimination for inductive propositions
+in $\kw{Prop}$ and $\kw{SProp}$.
+The exceptions are \emph{syntactic subsingletons},
 which are inductives that syntactically have at most one inhabitant,
 such as $\top$, $\bot$, and conjunction of propositions.
 While Rocq's impredicative $\kw{Prop}$ universe is not proof irrelevant,
-strong elimination is still forbidden even for inductives that aren't large
+Rocq still forbids strong elimination even for inductives that are not large
 to allow the use of classical principles.
-There is a compiler flag \code{-impredicative-set}
-to enable impredicativity for $\kw{Set}$
+Its compiler flag \code{-impredicative-set} enables impredicativity for $\kw{Set}$
 while still allowing strong elimination of small impredicative inductives,
 but this flag is not well supported.%
 \footnote{\url{https://github.com/coq/coq/issues/9458}}
 In Agda, the \code{-{}-with-K} flag enables Axiom K
 and the \code{-{}-without-K} flag disables it,
-while univalence can be proven as part of the features enabled by Cubical Agda
-using the \code{-{}-cubical} flag.
+while the features enabled by Cubical Agda using the \code{-{}-cubical} flag
+prove univalence as a theorem.
 There is also a \code{-{}-safe} flag which disallows,
 among other combinations,
 having both \code{-{}-with-K} and \code{-{}-cubical}.
 
-There is also some limited ability in tracking the usage of features and axioms.
+Proof assistants also provide some limited ability in tracking the usage of features and axioms.
 In Rocq, the axioms and unsafe flags used by a definition
 can be listed using the command \code{Print Assumptions},
 while in Lean, the axioms can be listed using \code{\#print axioms}.
 In Agda, along with checking for inconsistent option combinations,
-\code{-{}-safe} will also ensure the absence of any \code{postulate}s.
-Since option flags can be enabled at module-level granularity,
-there is also a notion of \emph{(co)infective} flags:
+\code{-{}-safe} also ensures the absence of any \code{postulate}s.
+Because option flags can be enabled at module-level granularity,
+Agda also has notion of \emph{(co)infective} flags:
 an infective flag used in one module
 must be used by all modules that depend on that module,
 while a coinfective flag used in one module
@@ -546,7 +544,7 @@ I have identified three shortcomings these systems.
   \item There is no way of asserting against an extension;
     that is, there is no general mechanism to tell the type checker to fail
     if a particular definition uses some feature or axiom.
-    Such an assertion would guarantee it safe to be used by other definitions
+    Such an assertion would guarantee that definition safe to be used by others
     that use an incompatible extension.
     For instance, ensuring that a proof does not use Axiom K
     means that it may be used by another proof that does use univalence.
@@ -563,7 +561,8 @@ I have identified three shortcomings these systems.
     This prevents reuse of a definition in one module inside another module
     if they happen to have incompatible features,
     even if that particular definition does not depend on any features at all.
-  \item Tracking features and axioms is only a compiler tool
+  \item \note{TODO: Update with new goal.}
+    Tracking features and axioms is only a compiler tool
     and is not formally described along with the underlying type theories themselves.
     While a description exists for a set of compatible theories
     by taking their greatest encompassing theory,
@@ -574,11 +573,11 @@ I have identified three shortcomings these systems.
 
 An ideal system for enabling and disabling features and axioms, then,
 should track which ones are and aren't used, at least at the definition level,
-and it should be formally described with the type theory as a whole.
+and should be formally described with the type theory as a whole.
 This suggests that a system for dependency tracking would be a good starting point.
 Therefore, the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
 a type system that incorporates dependency tracking and dependent types,
-could be a suitable framework for tracking multiple type theories.
+could be a suitable framework for tracking the usage of extensions within type theories.
 
 \section{A primer on DCOI} \label{sec:dcoi}
 
