@@ -295,19 +295,18 @@ In particular, if a type has decidable equality,
 then its equalities are themselves equal~\citep{hedberg}.
 
 \paragraph{Strong elimination.}
-Also known as \emph{large} elimination,
-an element of an inductive datatype can be destructed or eliminated
-into a type at a larger universe.
+Destructing or eliminating an element of an inductive datatype
+into a type at a larger universe is known as \emph{strong} or \emph{large} elimination.
 That is, a term whose type is in $\kw{Type}_i$
-can be eliminated to return a term whose type is in $\kw{Type}_j$
+is eliminated to return a term whose type is in $\kw{Type}_j$
 for some $j > i$.
 For proofs of propositions in $\kw{Prop}$,
-large elimination corresponds to eliminating into any non-proposition.
+this includes eliminating into any non-proposition type.
 
-Strong elimination is necessary ingredient in discriminating constructors
+Strong elimination is a necessary ingredient in discriminating constructors
 of proof-relevant datatypes, such as the booleans.
 While $\kw{true}$ and $\kw{false}$ are syntactically distinct,
-proving $\neg (\kw{true} \equiv \kw{false})$ requires lifting the booleans
+proving their propositional inequivalence requires lifting the booleans
 to propositions truthhood $\top$ and falsehood $\bot$.
 %
 \begin{align*}
@@ -315,32 +314,40 @@ to propositions truthhood $\top$ and falsehood $\bot$.
   \mathit{lift} &\coloneqq \lambda b \mathpunct{.} \kw{if} \; b \; \kw{then} \; \top \; \kw{else} \; \bot
 \end{align*}
 %
-This is a strong elimination because it returns a type,
-or equivalently because its return type is a universe.
-To complete the proof,
-given a proof of $\kw{true} \equiv \kw{false}$,
-$\top \equiv \bot$ holds by congruence over $\mathit{lift}$,
-across which the trivial proof $\kw{tt} : \top$ can be transported to $\bot$.
+The branching expression is a strong elimination because it returns a type,
+or equivalently because its return type is $\kw{Prop}$, a universe.
+Letting $\kw{cong} \; f$ be a proof of congruence of $f$ over an equality,
+to complete the proof of $\kw{true} \equiv \kw{false} \to \bot$,
+the trivial proof of truthhood $\kw{tt}$ is rewritten by the lifted equality $\top \equiv \bot$.
+%
+\begin{align*}
+  \mathit{trueNotFalse} &: \kw{true} \equiv \kw{false} \to \bot \\
+  \mathit{trueNotFalse} &\coloneqq \lambda e \mathpunct{.} \kw{rewrite} \; (\kw{cong} \; \textit{lift} \; e) \; \kw{in} \; \kw{tt}
+\end{align*}
 
 \subsection{Axioms}
 
 Rocq, Lean, and Agda all have mechanisms for defining axioms or postulates,
 which are declarations of constants without definitions.
 Although not all axioms are consistent,
-there are many well-studied additions worth considering as extensions in their own right.
+there are many well-studied additions commonly used in practice
+that are worth considering as extensions in their own right.
 
 \paragraph{Extensional principles.}
-Some models of type theory may semantically equate things
+Some models of type theory semantically equate things
 that are not syntactically (either definitionally or propositionally) equal;
-extensional principles will add semantic equalities as propositional equalities.
-\emph{Function extensionality} equates two functions if they are pointwise equal.
-\emph{Propositional extensionality} equates two propositions if they are bi\"implicated.
-These axioms are found in standard libraries in Lean as \code{funext} and \code{propext},
-and in Rocq as \code{Logic.FunctionalExtensionality.functional\_extensionality}
-and \code{Logic.PropExtensionality.propositional\_extensionality}.
+extensional principles adds semantic equalities as propositional equalities.
+Examples include \emph{function extensionality},
+which equates two functions if they are pointwise equal,
+and \emph{propositional extensionality},
+which equates two propositions if they are bi\"implicated.
+These axioms are found in the standard libraries of Lean as \code{funext} and \code{propext},
+and of Rocq as \code{Logic.{\allowbreak}FunctionalExtensionality.{\allowbreak}functional\_{\allowbreak}extensionality}
+and \code{Logic.{\allowbreak}PropExtensionality.{\allowbreak}propositional\_{\allowbreak}extensionality}.
 A notable consequence of propositional extensionality is propositional proof irrelevance.
 
-\emph{Univalence} asserts an equivalence between propositional equality and equivalence,
+Another example is \emph{univalence},
+which asserts an equivalence between propositional equality and equivalence,
 \ie given two types $A, B$,
 the equivalence $(A \equiv B) \simeq (A \simeq B)$ holds~\citep{hott}.
 There are several ways to define equivalence;
@@ -351,16 +358,19 @@ and univalence gives an equality from the isomorphism.
 Univalence alone also implies function extensionality
 by a more complex argument~\cite[Chapter 4.9]{hott}.
 
-One application of these new equalities
-may be encountered when encoding a function as a relation
+One application of function and propositional extensionality
+is encountered when encoding a function as a relation
 whose functionality is proven \apost.
 This is a frequent pattern in proof assistants,
-as induction relations often have better ergonomic support
+as inductive relations often have better ergonomic support
 than dependently-typed reasoning over functions.
-Consider an encoding of a two-place predicate
-over a representation of types $\mathit{Ty}$ and terms $\mathit{Tm}$ ---
-a function from $\mathit{Ty}$ to predicates $\mathit{Tm} \to \kw{Prop}$ ---
-as a relation:
+For example, consider a two-place predicate over
+a representation of types $\mathit{Ty}$ and terms $\mathit{Tm}$,
+which has the type $\mathit{Ty} \to \mathit{Tm} \to \kw{Prop}$.
+If we have trouble defining this predicate recursively due to termination issues
+or inductively due to strict positivity issues,
+we can instead view it as a function from $\mathit{Ty}$
+to a predicate $\mathit{Tm} \to \kw{Prop}$ and try encoding it as a relation:
 $$R : \mathit{Ty} \to (\mathit{Tm} \to \kw{Prop}) \to \kw{Prop}.$$
 Such a relation could be a \emph{logical relation}~\citep{logrel}
 used to model typed lambda calculi,
@@ -375,8 +385,8 @@ since $\forall (a : \mathit{Tm})\mathpunct{.} P \; a \equiv Q \; a$
 follows from propositional extensionality,
 and finally $P \equiv Q$ from function extensionality.
 
-The disadvantage of axiomatic equalities is that substitutions will not further reduce on them,
-which can make reasoning about the substituted terms difficult.
+The disadvantage of axiomatic equalities is that rewriting by them does not reduce,
+which can make reasoning about terms rewritten by such equalities difficult.
 There are type theories beyond MLTT and CIC that are designed
 so that these principles are instead provable theorems,
 such as cubical type theories~\citep{bch,cchm,afh,cartesian}
@@ -385,7 +395,7 @@ and observational type theory~\citep{ott,ott-now,ttobs,ccobs,cicobs}
 for function and propositional extensionality.
 
 \paragraph{Classical principles.}
-There are a number of classical principles which do not hold intuitionistically.
+There are a number of classical axioms that do not hold intuitionistically.
 The most common is the principle of \emph{excluded middle} (EM),
 which asserts that all propositions are either true (inhabited) or false (uninhabited).
 It is found in Lean as \code{em} and in Rocq as \code{Logic.Classical\_Prop.classic}.
@@ -396,10 +406,11 @@ and \emph{Peirce's law},
 $\forall (A \; B : \kw{Prop})\mathpunct{.} ((A \to B) \to A) \to A$.
 
 Because a large majority of mathematics is done classically,
-many communities mechanizing mathematics will freely use classical principles.
+many communities mechanizing mathematics freely use classical principles.
 In particular, Lean's mathematical library mathlib~\citep{mathlib}
 contains proofs that rely on classical axioms,
-and tactics such as \code{tauto} will automatically apply classical reasoning.
+and tactics such as \code{tauto} automatically apply classical reasoning.
+\note{Connect to above and cite Tim Griffen.}
 There is work towards constructively integrating classical principles into type theory consistently,
 typically in the form of calculi with control operators~\citep{mu,mumu,dl,sr}.
 
