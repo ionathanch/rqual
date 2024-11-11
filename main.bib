@@ -499,26 +499,6 @@
   isbn      = {978-3-031-xxxxx-x},
 }
 
-@article{10.1145/2578855.2535883,
-author = {Casinghino, Chris and Sj\"{o}berg, Vilhelm and Weirich, Stephanie},
-title = {Combining proofs and programs in a dependently typed language},
-year = {2014},
-issue_date = {January 2014},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {49},
-number = {1},
-issn = {0362-1340},
-url = {https://doi.org/10.1145/2578855.2535883},
-doi = {10.1145/2578855.2535883},
-abstract = {Most dependently-typed programming languages either require that all expressions terminate (e.g. Coq, Agda, and Epigram), or allow infinite loops but are inconsistent when viewed as logics (e.g. Haskell, ATS, Ωmega. Here, we combine these two approaches into a single dependently-typed core language. The language is composed of two fragments that share a common syntax and overlapping semantics: a logic that guarantees total correctness, and a call-by-value programming language that guarantees type safety but not termination. The two fragments may interact: logical expressions may be used as programs; the logic may soundly reason about potentially nonterminating programs; programs can require logical proofs as arguments; and "mobile" program values, including proofs computed at runtime, may be used as evidence by the logic. This language allows programmers to work with total and partial functions uniformly, providing a smooth path from functional programming to dependently-typed programming.},
-journal = {SIGPLAN Not.},
-month = jan,
-pages = {33–45},
-numpages = {13},
-keywords = {termination, general recursion, dependent types}
-}
-
 @inproceedings{lambda-theta,
   author    = {Casinghino, Chris and Sj\"{o}berg, Vilhelm and Weirich, Stephanie},
   title     = {{Combining proofs and programs in a dependently typed language}},
@@ -638,4 +618,21 @@ keywords = {termination, general recursion, dependent types}
   numpages  = 12,
   location  = {San Francisco, California, USA},
   series    = {POPL '90}
+}
+
+@InProceedings{2ls,
+  author    = {Altenkirch, Thorsten and Capriotti, Paolo and Kraus, Nicolai},
+  title     = {{Extending Homotopy Type Theory with Strict Equality}},
+  booktitle = {25th EACSL Annual Conference on Computer Science Logic (CSL 2016)},
+  pages     = {21:1--21:17},
+  series    = {Leibniz International Proceedings in Informatics (LIPIcs)},
+  ISBN      = {978-3-95977-022-4},
+  ISSN      = {1868-8969},
+  year      = 2016,
+  volume    = 62,
+  editor    = {Talbot, Jean-Marc and Regnier, Laurent},
+  publisher = {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik},
+  address   = {Dagstuhl, Germany},
+  URN       = {urn:nbn:de:0030-drops-65612},
+  doi       = {10.4230/LIPIcs.CSL.2016.21}
 }

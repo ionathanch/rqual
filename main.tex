@@ -33,8 +33,8 @@
 \newcommand{\HH}{\mathsf{H}}
 \newcommand{\LL}{\mathsf{L}}
 \renewcommand{\SS}{\mathsf{S}}
-\newcommand{\oo}{\mathsf{o}}
-\newcommand{\ii}{\mathsf{i}}
+\newcommand{\oo}{\mathsf{s}}
+\newcommand{\ii}{\mathsf{p}}
 
 \begin{document}
 \maketitle
@@ -561,19 +561,20 @@ I have identified three shortcomings these systems.
     This prevents reuse of a definition in one module inside another module
     if they happen to have incompatible features,
     even if that particular definition does not depend on any features at all.
-  \item \note{TODO: Update with new goal.}
-    Tracking features and axioms is only a compiler tool
-    and is not formally described along with the underlying type theories themselves.
-    While a description exists for a set of compatible theories
-    by taking their greatest encompassing theory,
-    this is not the case when there are two incompatible theories that exist side by side.
-    Such theories may be described independently,
-    but would be incomplete descriptions of the entire core of a proof assistant.
+  \item Completely disallowing an incompatible extension is unnecessarily restrictive.
+    For example, when both \code{-{}-safe} and \code{-{}-with-K} are enabled in Agda,
+    nothing that uses \code{-{}-cubical} can be mentioned anywhere.
+    However, it should be acceptable to use a theory with UIP
+    to state and prove the properties of univalence,
+    while never eliminating an equality derived from univalence.
+    To generalize, definitions from an incompatible extension
+    should be permitted in the type of a term but restricted in the term itself,
+    so that we can talk \emph{about} an extension without \emph{using} it.
 \end{itemize}
 
 An ideal system for enabling and disabling features and axioms, then,
 should track which ones are and aren't used, at least at the definition level,
-and should be formally described with the type theory as a whole.
+and distinguish between mentioning and using them.
 This suggests that a system for dependency tracking would be a good starting point.
 Therefore, the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
 a type system that incorporates dependency tracking and dependent types,
@@ -902,7 +903,7 @@ it may be reasonable to instead explore a more StraTT-like structure.
 \subsection{Multi-system frameworks}
 
 \paragraph{Two-level type theory.}
-The most similar work to extension tracking is two-level type theory (2LTT)~\citep{2ltt}.
+The most similar work to extension tracking is two-level type theory (2LTT)~\citep{2ls,2ltt}.
 It consists of an inner homotopical type theory with univalence
 and an outer intensional type theory with UIP,
 along with a conversion operation $\mathop{\uparrow} \cdot$ from the inner theory to the outer.
