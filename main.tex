@@ -398,21 +398,31 @@ for function and propositional extensionality.
 There are a number of classical axioms that do not hold intuitionistically.
 The most common is the principle of \emph{excluded middle} (EM),
 which asserts that all propositions are either true (inhabited) or false (uninhabited).
-It is found in Lean as \code{em} and in Rocq as \code{Logic.Classical\_Prop.classic}.
 EM is equivalent to several other principles,
 including \emph{double negation elimination} (DNE),
 $\forall (A : \kw{Prop})\mathpunct{.} \neg \neg A \to A$,
 and \emph{Peirce's law},
 $\forall (A \; B : \kw{Prop})\mathpunct{.} ((A \to B) \to A) \to A$.
+More powerful axioms which imply EM include the axiom of choice
+and the (in)definite description operators,
+which deal with extracting a concrete piece of data
+out of merely knowing that such a piece of data exists without constructing it.
 
 Because a large majority of mathematics is done classically,
 many communities mechanizing mathematics freely use classical principles.
-In particular, Lean's mathematical library mathlib~\citep{mathlib}
+The axiom of excluded middle, for instance,
+is declared in Rocq as \code{Logic.Classical\_Prop.classic},
+and in Lean as \code{em}.
+The \code{Logic} subdirectory of Rocq's standard library
+contains the classical axioms along with proofs about their properties.
+Similarly, Lean's mathematical library mathlib~\citep{mathlib}
 contains proofs that rely on classical axioms,
 and tactics such as \code{tauto} automatically apply classical reasoning.
-\note{Connect to above and cite Tim Griffen.}
-There is work towards constructively integrating classical principles into type theory consistently,
-typically in the form of calculi with control operators~\citep{mu,mumu,dl,sr}.
+\note{Not sure what the point I was trying to make
+about constructively implementing classical principles
+so I've commented that out for now...}
+% There is work towards constructively integrating classical principles into type theory consistently,
+% typically in the form of calculi with control operators~\citep{control,mu,mumu,dl,sr}.
 
 \subsection{Extensions and inconsistencies}
 
@@ -468,7 +478,7 @@ below are a few such combinations.
 \label{fig:lattice}
 \end{figure}
 
-\Cref{fig:lattice} illustrates some of the aforementioned relationships between extensions.
+\Cref{fig:lattice} illustrates some of these relationships between extensions.
 The arrows point from one theory to a greater encompassing theory;
 for instance, a theory with propositional extensionality extends the equalities
 of a theory with a universe of propositions,
