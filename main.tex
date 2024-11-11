@@ -583,9 +583,8 @@ could be a suitable framework for tracking the usage of extensions within type t
 \section{A primer on DCOI} \label{sec:dcoi}
 
 DCOI is a Pure Type System (PTS)~\citep{pts} augmented with dependency tracking~\cite{dcc}.
-An instantiation of DCOI's PTS rules and axioms governing how types and terms interact
-is DCOI$^\omega$~\citep{dcoi-omega},
-which has dependent types and a predicative universe hierarchy,
+DCOI$^\omega$~\citep{dcoi-omega} is a logically consistent instantiation
+of DCOI's PTS rules and axioms with a predicative universe hierarchy,
 making it suitable as a foundation for theorem proving.
 In a typing judgement, dependency tracking appears as annotations
 on both the variables in the context,
@@ -595,8 +594,7 @@ to indicate how the term itself may be used.
 As an example, consider the following derivable typing judgement for a constant function.
 $$A :^\HH \kw{Type} \vdash \lambda x^\LL \; y^\HH \mathpunct{.} x :^\LL
   A^\LL \to A^\HH \to A$$
-The concrete levels used here are low ($\LL$) and high ($\HH$) where $\LL < \HH$,
-though DCOI is general over any meet-semilattice.
+The concrete levels used here are low ($\LL$) and high ($\HH$) where $\LL < \HH$.
 In the context of information flow,
 these levels correspond to low- and high-security computations
 where low-security computations may not inspect the values of high-security ones.
@@ -610,21 +608,25 @@ which returns its first argument $x$ and ignores its second argument $y$,
 must therefore mark $x$ and its type as low to return it,
 and marking $y$ and its type as high guarantees that it could not return it.
 While the body of the low function cannot return a high argument,
-its type \emph{can} depend on a high term,
+its \emph{type} can depend on a high term,
 demonstrated by the high-annotated type $A$ in the context,
 which is used in the type of the function.
 The intuition is that $A$ does not play a part in the run-time execution of the constant function,
 but is otherwise permitted to participate in compile-time type checking.
 
-Rather than irrelevance or information flow,
-the target application is extension tracking,
-where each dependency level corresponds to a set of added extensions.
-Relevant to this application are a number of key aspects and properties of DCOI
+Though the example only uses two levels $\LL$ and $\HH$,
+any instance of DCOI is parametrized over some meet-semilattice,
+from which its dependency levels are drawn.
+Rather than tracking relevance or information flow,
+the goal of this report is track extensions
+using a lattice that associates dependency levels to sets of added extensions.
+Before discussing this mapping in \cref{sec:lattice},
+I summarize shortly the relevant key aspects and properties of DCOI
 that highlight how dependency tracking interacts with terms and typing.
 
 \paragraph{Relative relevance.}
 The intuition of computational relevance and irrelevance
-is not fixed to the low and high levels,
+is therefore not fixed to the low and high levels,
 but is a relative concept between any two ordered dependency levels.
 Suppose there is a super-high level $\SS$ such that $\LL < \HH < \SS$.
 Then just as a low term may not meaningfully use a high term,
@@ -639,17 +641,19 @@ Once again, the term being typed is a low function,
 while higher terms are involved in its type.
 Although the function is an identity function,
 its domain and codomain types are syntactically different applications of $P$,
-but this judgement still holds because the arguments of $P$ are super-high
-and therefore irrelevant \emph{with respect to} $P$ at high.
+but this judgement still holds due to \emph{indistinguishability}.
 
 \paragraph{Indistinguishability.}
 In general, if $\ell_1 < \ell_2$, then at observer level $\ell_1$,
-$f \; x^{\ell_2}$ must be definitionally equal to $f \; y^{\ell_2}$
-regardless of what $x$ and $y$ are.
+the function application $f \; x^{\ell_2}$ must be equal
+to $f \; y^{\ell_2}$ regardless of what $x$ and $y$ are.
 We say that they are \emph{indistinguishable} at level $\ell_1$.
-This key equality is what permits the above example to type check,
-since $P \; s^\SS$ is thus indistinguishable from $P \; (s + 1)^\SS$ at high.
-Similarly, calling the constant function above $k$,
+Indistinguishability plays the r\^ole of definitional equality
+when checking that two types are the same.
+This is why the above example type checks,
+since $P \; s^\SS$ is indistinguishable from $P \; (s + 1)^\SS$ at high,
+the level of $P$.
+Similarly, calling the low-level constant function above $k$,
 $k \; x^\LL \; y^\HH$ is indistinguishable from $k \; x^\LL \; z^\HH$ at low,
 which expresses the idea that $k$ is truly constant in its second argument.
 
