@@ -115,7 +115,7 @@ These type theoretic extensions can consist of additional typing rules,
 constructs, and/or definitional equalities.
 Because each extension embodies semantically distinct reasoning principles,
 enabling an extension results in a separate theory altogether.
-Furthermore, there exist extensions that are mutually incompatible
+There also exist extensions that are mutually incompatible
 because together they violate logical consistency.
 For instance, \emph{uniqueness of identity proofs},
 which propositionally equates all proofs of the same equality,
@@ -686,7 +686,7 @@ and the function needs to be assigned a lower level than its type.
 \paragraph{Subsumption and downgrading.}
 While lower-level terms cannot inspect higher-level terms,
 higher-level terms can inspect lower-level terms.
-Furthermore, a lower-level term can be raised to a higher level by \emph{subsumption}:
+A lower-level term can also be raised to a higher level by \emph{subsumption}:
 if a term is well typed at level $\ell_1$,
 then it is also well typed with the same type at a higher level $\ell_2 > \ell_1$.
 
@@ -803,6 +803,12 @@ This project should answer the following questions:
     (\eg Axiom K),
     and ones that add new axiomatic constructs without reduction rules
     (\eg function and propositional extensionality, excluded middle).
+  \item \label[question]{item:applications}
+    What are useful applications of being able to freely refer to other theories?
+    The previous example that referred to the K eliminator, while true,
+    is stating a trivial fact that is already provable within the UIP theory.
+    Are there meaningful theorems about one theory that cannot be proven in that theory,
+    but can be proven in a different yet potentially incompatible theory?
   \item \label[question]{item:model}
     How would a particular lattice of theories be modelled
     to show logical consistency?
@@ -810,12 +816,6 @@ This project should answer the following questions:
     should be broadly applicable and sufficiently extensible
     to be applied to a different lattice without redoing all the work,
     so that adding more extensions remains sustainable.
-  \item \label[question]{item:applications}
-    What are useful applications of being able to freely refer to other theories?
-    The previous example that referred to the K eliminator, while true,
-    is stating a trivial fact that is already provable within the UIP theory.
-    Are there meaningful theorems about one theory that cannot be proven in that theory,
-    but can be proven in a different yet potentially incompatible theory?
 \end{enumerate}
 
 To answer these questions, the project would be divided into two portions.
@@ -833,6 +833,8 @@ are good sources for inspiration,
 as many of their files use the features and axioms mentioned in \cref{sec:extensions}.
 An implementation would also serve to verify which extensions are indeed invalid
 by demonstrating the inconsistencies they yield.
+Additionally, writing and checking large proofs would be feasible,
+which helps with exploring more complex applications.
 
 With an implementation, useability concerns can be explored,
 such as level inference.
@@ -841,8 +843,7 @@ is an unreasonable burden on a practical proof assistant user,
 and it may be possible to infer the annotations
 either based on the syntactic constructs used
 or on what set of features are required for successful type checking.
-\note{TODO: More details?? This should also answer \cref{item:applications}
-by being able to write and type check proofs.}
+\note{TODO: More details?? Maybe just delete this paragraph.}
 
 The second portion is a formalized and ideally mechanized proof of consistency.
 Because consistency is a semantic property and depends on the strength
@@ -855,8 +856,14 @@ not on accommodating as many as possible from the outset.
 A sensible starting point would be the mechanization of DCOI$^\omega$~\cite{dcoi-omega},
 which proves consistency and normalization of what would be the base theory in the lattice,
 and picking a reasonable feature to extend it with.
-However, this mechanization uses a syntactic logical relation
-indexed by well-founded universe levels as its semantic model,
+Candidates include UIP or function extensionality,
+as they are expected to already hold in the semantic model.
+In this case, the challenge is to prove that the base theory does \emph{not}
+prove UIP or function extensionality to demonstrate that
+other incompatible extensions could be added to the base theory.
+
+Moreover, the semantic model is a syntactic logical relation
+indexed by well-founded universe levels,
 which may limit its extensibility;
 it cannot be straightforwardly extended to accommodate impredicativity,
 nor to accommodate typed definitional equality.
