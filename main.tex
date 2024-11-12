@@ -41,7 +41,7 @@
 
 \begin{abstract}
   While many proof assistants are founded upon common theoretical ground,
-  they will also feature further extensions and axioms
+  they also feature further extensions and axioms
   that augment their reasoning power.
   Because some extensions are mutually inconsistent,
   proof assistants support tracking which are used where
@@ -66,43 +66,6 @@
 
 \section{Introduction}
 
-\iffalse
-Dependent type theories form the theoretical foundations of many proof assistants
-used for automating and mechanizing theorems in areas ranging from pure mathematics
-to modelling real programming languages.
-Flavours of theories such as Martin-L\"of Type Theory (MLTT)~\citep{mltt}
-and the Calculus of Inductive Constructions (CIC)~\citep{cic}
-form the basis of some of the most widely used proof assistants.
-By the Curry--Howard correspondence,
-where propositions correspond to types and proofs correspond to terms,
-the core of proof assistants are language implementations.
-As such, they share many of the same components
-as implementations of typical programming languages,
-such as a parser, a type checker, and a compiler.
-
-Like many language implementations,
-proof assistants will incorporate optional language features
-that influence the behaviour of its inner components.
-For programming languages, these features may be compiler optimizations,
-static analyses that restrict the language to enable these optimizations,
-or type system extensions that increase what the type checker accepts.
-Because the primary use case of proof assistants is to type check mechanized proofs,
-their language extensions are largely the latter,
-each of which alters the underlying type theory.
-
-Consequently, the effects of extensions in proof assistants are nonlocal,
-as opposed to, say, marking a function as tail recursive,
-which does not affect the behaviour of functions around it.
-Using a particular type theoretic extension in a module, for instance,
-changes the reasoning principles that are or aren't allowed in that module,
-which can infect other modules that import it.
-Furthermore, there exist extensions that are mutually incompatible
-because together they would violate logical consistency of the type theory.
-In \cref{sec:extensions},
-I describe a few such extensions found in select proof assistants,
-and the ways some combinations are incompatible.
-\fi
-
 At the core of a proof assistant founded on the Curry--Howard correspondence
 is a type checker that validates a proof of a proposition---a term inhabiting
 a corresponding type in a dependent type theory.
@@ -110,7 +73,7 @@ These type theories are typically based on some flavour of
 Martin-L\"of Type Theory (MLTT)~\citep{mltt}
 or the Calculus of Inductive Constructions (CIC)~\citep{cic}.
 In practice, a proof assistant doesn't implement merely one type theory,
-but a whole host of them, as they will include language extensions
+but a whole host of them, as they include language extensions
 that augment or modify its reasoning power.
 
 These type theoretic extensions can consist of additional typing rules,
@@ -433,9 +396,6 @@ contains the classical axioms along with proofs about their properties.
 Similarly, Lean's mathematical library mathlib~\citep{mathlib}
 contains proofs that rely on classical axioms,
 and tactics such as \code{tauto} automatically apply classical reasoning.
-\note{Not sure what the point I was trying to make
-about constructively implementing classical principles
-so I've commented that out for now...}
 % There is work towards constructively integrating classical principles into type theory consistently,
 % typically in the form of calculi with control operators~\citep{control,mu,mumu,dl,sr}.
 
@@ -679,7 +639,7 @@ The sole exception is the eliminator for $\bot$,
 since it has no constructors, so there is no information to reveal.
 The computational interpretation of having a proof of $\bot$ to eliminate
 is that we have reached an impossible dead branch,
-so what we do with it will never matter since it will never execute.
+so what we do with it never matters since it never executes.
 The ability of eliminate higher-level proofs of falsehood into lower-level terms
 is useful when the type of a function rules out a particular branch,
 and the function needs to be assigned a lower level than its type.
@@ -696,9 +656,9 @@ then they can be indistinguishable by a \emph{lower} observer level $\ell_1$ by 
 From a security flow perspective, the higher the observer level,
 the more secure values may be observed,
 so the more things are distinguishable,
-since securer values will need to be compared as well instead of being ignored.
+since securer values need to be compared as well instead of being ignored.
 Going down an observer level means more things are being hidden away,
-so more values will appear to be indistinguishable from one another.
+so more values appear to be indistinguishable from one another.
 
 \section{Lattices of type theories} \label{sec:lattice}
 
@@ -760,12 +720,12 @@ Following the rules of DCOI,
 each individual theory must be logically consistent.
 If an inconsistency exists at any theory,
 by the elimination of higher falsehoods,
-the inconsistency will propagate to all lower theories, including the bottom theory.
+the inconsistency propagates to all lower theories, including the bottom theory.
 Then by subsumption, the inconsistency at the bottom theory
 can be raised to propagate to all higher theories,
-and the entire lattice will be inconsistent.
+and the entire lattice would be inconsistent.
 This means that if eliminating falsehoods works exactly as in DCOI,
-any theory that features nontermination will not be permitted.
+any theory that features nontermination would not be permitted.
 
 As the goal is to exclude incompatible extensions from a proof assistant,
 disallowing logically inconsistent theories is a desirable trait.
@@ -785,7 +745,7 @@ Even if that equality is defined for a given observer level,
 it will hold for all lower observer levels by downgrading,
 and the extension will be available to all lower theories.
 This effect cannot be mitigated using restrictive premises,
-as violating downgrading will violate many other desirable properties,
+as violating downgrading violates many other desirable properties,
 including transitivity of definitional equality~\citep{dcoi-omega}.
 \note{What \emph{does} this mean for $\kw{SProp}$??}
 
@@ -837,14 +797,13 @@ by demonstrating the inconsistencies they yield.
 Additionally, writing and checking large proofs would be feasible,
 which helps with exploring more complex applications.
 
-With an implementation, useability concerns can be explored,
-such as level inference.
-Annotating definitions and arguments with every single extension it uses
-is an unreasonable burden on a practical proof assistant user,
-and it may be possible to infer the annotations
-either based on the syntactic constructs used
-or on what set of features are required for successful type checking.
-\note{TODO: More details?? Maybe just delete this paragraph.}
+% With an implementation, useability concerns can be explored,
+% such as level inference.
+% Annotating definitions and arguments with every single extension it uses
+% is an unreasonable burden on a practical proof assistant user,
+% and it may be possible to infer the annotations
+% either based on the syntactic constructs used
+% or on what set of features are required for successful type checking.
 
 The second portion is a formalized and ideally mechanized proof of consistency.
 Because consistency is a semantic property and depends on the strength
