@@ -820,8 +820,7 @@ This project should answer the following questions:
 
 To answer these questions, the project would be divided into two portions.
 The first is an implementation of a type checker for a specific lattice of type theories.
-The lattice should contain a sufficiently diverse set of labels and their orders
-to answer \cref{item:extensions}.
+The lattice should contain a sufficiently diverse set of labels and their orders.
 \Cref{fig:lattice} is a good place to start,
 as it contains theories in different classifications with different interactions.
 
@@ -861,7 +860,10 @@ indexed by well-founded universe levels as its semantic model,
 which may limit its extensibility;
 it cannot be straightforwardly extended to accommodate impredicativity,
 nor to accommodate typed definitional equality.
-A viable solution to \cref{item:model} must overcome this limitation.
+If the PTS rules and axioms of DCOI are instead instantiated to
+a single impredicative universe with no universe hierarchy or strong elimination,
+we can adapt the logical relation for the Calculus of Constructions by \citet{cc}
+to prove consistency and normalization.
 
 A possible alternative is to use \emph{syntactic} modelling~\citep{syntactic},
 which would involve a type-preserving translation into another type theory
