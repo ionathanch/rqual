@@ -953,6 +953,7 @@ the Trellys project focussed on combining dependently-typed logical reasoning
 with (potentially nonterminating) functional programming.
 The main works within the project are $\lambda^\theta$~\citep{lambda-theta},
 which classifies typing judgements of a single language into logical and programmatic fragments;
+Zombie~\citep{zombie}, an implementation that closely follows $\lambda^\theta$;
 Sep$^3$~\citep{sep3}, which syntactically separate proofs from programs;
 and Nax~\citep{nax}, which augments dependent types with Mendler-style recursion schemes.
 
@@ -970,11 +971,16 @@ and restricting reduction to call by value.
 While the boxing mechanism is similar to domain level annotations in DCOI,
 the value restrictions are specific to handling presence of potential divergence.
 
-The proof of normalization uses a step-indexed logical relation,
+\Citet{proofs-programs} extends the work done for $\lambda^\theta$
+by looking at a number of languages with logical and programmatic fragments,
+beginning with a simply typed calculus with classifications (also named $\lambda^\theta$),
+extending it with types dependent on terms in LF$^\theta$,
+then further extending that with terms dependent on types (\ie type polymorphism)
+and types dependent on types (\ie type-level computation) in PCC$^\theta$.
+The proofs of normalization for these calculi use partially step-indexed logical relations,
 where stepping only occurs in the programmatic fragment.
-However, $\lambda^\theta$ only has a single type universe with no type polymorphism,
-which the logical relation takes advantage of,
-so this proof technique does not extend to DCOI or any variant with a universe hierarchy.
+However, the proof technique does not scale up to handle large elimination or a universe hierarchy,
+both of which are present in Zombie.
 
 \subsection{Other proof assistants}
 
