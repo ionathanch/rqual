@@ -43,17 +43,19 @@
   While many proof assistants are founded upon common theoretical ground,
   they will also feature further extensions and axioms
   that augment their reasoning power.
-  The individual theories based on each extension are individually sound,
-  but how type checkers handle their interactions at compile time
-  is not formally described.
-  Furthermore, the way proof assistants currently enable extensions
-  can be too coarse and imprecise when it comes to
-  guarantees about the features a top-level definition may use.
-  \note{Needs to be rewritten to reflect new introduction.}
+  Because some extensions are mutually inconsistent,
+  proof assistants support tracking which are used where
+  and checking that incompatible extensions are not enabled simultaneously.
+  However, this extension tracking is \emph{external} to the type system,
+  and it is not possible to refer to the fact that a term uses a specific set of extensions.
+  Furthermore, is it not possible refer to a definition that uses an incompatible extension
+  even if it is never used in an inconsistent manner.
+  If extension tracking could be \emph{internalized},
+  then we would have a framework to talk about the properties of different extensions
+  within the type system itself.
 
   A first step towards a framework of extensions could use
-  the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi}
-  to formalize granular and precise extension tracking.
+  the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi}.
   DCOI is a type system with dependency tracking,
   where terms and variables are assigned dependency levels alongside their types.
   These dependency levels form a lattice that describes
@@ -145,12 +147,11 @@ Ultimately, what is missing is a framework for describing
 fine-grained control of proofs and programs across multiple type theories,
 where even incompatible theories can interact in interesting ways.
 These properties are reminiscent of type systems with \emph{dependency analysis}.
-Here, terms are stratified by \emph{dependency levels},
+In such systems, terms are stratified by \emph{dependency levels},
 which can be thought of intuitively as permission levels tracking permitted usages.
 Even if we do not have access to a particular level,
 terms at that level can still be manipulated and reasoned about
 as long as they are not inspected or evaluated.
-\note{Is this too vague?}
 
 I have worked on a type system with dependency tracking,
 the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
