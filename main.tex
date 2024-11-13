@@ -319,6 +319,13 @@ Examples include \emph{function extensionality},
 which equates two functions if they are pointwise equal,
 and \emph{propositional extensionality},
 which equates two propositions if they are bi\"implicated.
+%
+\begin{align*}
+  \mathit{funext} &: \forall (A : \kw{Type}) \; (B : A \to \kw{Type}) \; (f \; g : \Pi (x : A) \mathpunct{.} B \; x) \mathpunct{.}
+    (\forall (x : A) \mathpunct{.} f \; x \equiv g \; x) \to f \equiv g \\
+  \mathit{propext} &: \forall (A \; B : \kw{Prop}) \mathpunct{.} (A \to B) \to (B \to A) \to A \equiv B
+\end{align*}
+%
 These axioms are found in the standard libraries of Lean as \code{funext} and \code{propext},
 and of Rocq as \code{Logic.{\allowbreak}FunctionalExtensionality.{\allowbreak}functional\_{\allowbreak}extensionality}
 and \code{Logic.{\allowbreak}PropExtensionality.{\allowbreak}propositional\_{\allowbreak}extensionality}.
@@ -327,7 +334,8 @@ A notable consequence of propositional extensionality is propositional proof irr
 Another example is \emph{univalence},
 which asserts an equivalence between propositional equality and equivalence,
 \ie given two types $A, B$,
-the equivalence $(A \equiv B) \simeq (A \simeq B)$ holds~\citep{hott}.
+the equivalence $(A \equiv B) \simeq (A \simeq B)$ holds.
+This is the core principle underlying Homotopy Type Theory~\citep{hott}.
 There are several ways to define equivalence;
 the idea is that it captures a propositionally proof-irrelevant isomorphism.
 Univalence together with proof irrelevance implies propositional extensionality,
@@ -794,8 +802,46 @@ are good sources for inspiration,
 as many of their files use the features and axioms mentioned in \cref{sec:extensions}.
 An implementation would also serve to verify which extensions are indeed invalid
 by demonstrating the inconsistencies they yield.
+
 Additionally, writing and checking large proofs would be feasible,
 which helps with exploring more complex applications.
+One example is computing \emph{semisimplicial types},
+which is an open problem in Homotopy Type Theory~\citep{hott}.
+Two-level type theory (2LTT)~\citep{2ls,2ltt} is one solution
+that contains separate theories with univalence and with UIP,
+and Agda implements 2LTT as the \code{-{}-two-level} extension.
+We can use libraries\footnote{\eg \url{https://github.com/UnivalencePrinciple/2LTT-Agda}}
+for 2LTT in Agda as inspiration for testing whether this project's implementation
+of orthogonal univalence and UIP extensions can handle the same proof load.
+\Cref{sec:multi} discusses some more details about 2LTT.
+
+The useability of the implementation will inform the design of the system,
+especially for considerations beyond DCOI,
+such as level inference and level polymorphism.
+Annotating definitions and arguments with every single extension it uses
+is an unreasonable burden on a practical proof assistant user.
+The prototype implementation accompanying DCOI~\citep{dcoi-artifact}
+has rudimentary level inference defaulting to a minimum level.
+However, the lattice implemented is the usual order of the naturals,
+and the examples provided typically use no more than two levels.
+An implementation with a lattice containing incompatible extensions
+and applications that involve more than two theories
+would pinpoint what is required from level inference in practice
+for a more sophisticated inference algorithm.
+
+Rewriting libraries in this implementation is also an exercise
+in determining where code duplication occurs
+and whether level polymorphism would help eliminate it.
+Although subsumption allows lifting definitions vertically,
+so to speak, from lower theories to higher ones,
+it does not allow transporting definitions horizontally
+from one theory to a different, incompatible theory.
+In addition, while a function can quantify over terms at specific levels,
+it cannot quantify over \emph{all} such levels,
+or over levels that satisfy some ordering constraint.
+Having a lot of examples in the implementation
+would reveal whether these are real concerns to be addressed
+and what kind of level polymorphism could address them.
 
 % With an implementation, useability concerns can be explored,
 % such as level inference.
@@ -884,7 +930,7 @@ it may be reasonable to instead explore a more StraTT-like structure.
 
 \section{Related work} \label{sec:related}
 
-\subsection{Multi-system frameworks}
+\subsection{Multi-system frameworks} \label{sec:multi}
 
 \paragraph{Two-level type theory.}
 The most similar work to extension tracking is two-level type theory (2LTT)~\citep{2ls,2ltt}.
@@ -951,6 +997,17 @@ where stepping only occurs in the programmatic fragment.
 However, the proof technique does not scale up to handle large elimination or a universe hierarchy,
 both of which are present in Zombie.
 
+\paragraph{System DE.}
+Similarly to PCC$^\theta$, System DE~\citep{system-de}
+is a dependent type system with logical and programmatic fragments,
+where the logical fragment is again normalizing.
+It extends System DC~\citep{system-dc}
+and is designed to be suitable as a core calculus
+of the Glasgow Haskell Compiler~\citep{ghc};
+as such, it deals with explicit coercion proofs.
+In contrast to PCC$^\theta$,
+System DE has the type-in-type axiom in the programmatic fragment.
+
 \subsection{Other proof assistants}
 
 \Cref{sec:extensions} broadly covers a number of optional features
@@ -986,6 +1043,7 @@ divergence aside, effects do not extend the internal type system.
 
 \section{Conclusion}
 
+\clearpage
 \noindent
 \bibliography{main}
 \end{document}
