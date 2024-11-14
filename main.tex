@@ -76,11 +76,11 @@ In practice, a proof assistant doesn't implement merely one type theory,
 but a whole host of them, as they include language extensions
 that augment or modify its reasoning power.
 
-These type theoretic extensions can consist of additional typing rules,
-constructs, and/or definitional equalities.
+These type theoretic extensions consists of new typing rules,
+axioms, constructs, and/or definitional equalities.
 Because each extension embodies semantically distinct reasoning principles,
 enabling an extension results in a separate theory altogether.
-There also exist extensions that are mutually incompatible
+However, some extensions are mutually incompatible and cannot be enabled simultaneously
 because together they violate logical consistency.
 For instance, \emph{uniqueness of identity proofs},
 which propositionally equates all proofs of the same equality,
@@ -109,7 +109,8 @@ about classical principles.
 Ultimately, what is missing is a framework for describing
 fine-grained control of proofs and programs across multiple type theories,
 where even incompatible theories can interact in interesting ways.
-These properties are reminiscent of type systems with \emph{dependency analysis}.
+This fine-grained control of terms is reminiscent of
+type systems with \emph{dependency analysis}.
 In such systems, terms are stratified by \emph{dependency levels},
 which can be thought of intuitively as permission levels tracking permitted usages.
 Even if we do not have access to a particular level,
@@ -138,14 +139,13 @@ To look at extensions in practice,
 let us focus on three popular proof assistants:
 Rocq~\citep{coq}, Agda~\citep{agda}, and Lean~\citep{lean}.
 Broadly speaking, they are all based on variants of MLTT or CIC,
-and have dependent functions, type universes, and inductive types,
-which are sufficient to encode a wide variety of logical propositions and proofs.
+and have dependent functions, type universes, and inductive types.
 
 \subsection{Built-in features}
 
 Each of these proof assistants include features that extend the power of their foundations;
 below are a few notable extensions,
-some of which are hidden behind option flags.
+some of which are controlled option flags.
 
 \paragraph{Impredicativity.}
 Rocq and Lean, being based on CIC,
@@ -159,6 +159,8 @@ Inductive types may also be defined in $\kw{Prop}$,
 which permits its constructors to have argument types
 in universes larger than $\kw{Prop}$.
 Such inductives are said to be \emph{large}.
+An impredicative $\kw{Prop}$ is a default feature of Rocq and Lean,
+not an option that can be turned off.
 
 Impredicativity allows for self-referential propositions by quantifying over $\kw{Prop}$.
 For instance, given a proof that all propositions imply their double negation,
@@ -312,11 +314,13 @@ which are declarations of constants without definitions.
 Although not all axioms are consistent,
 there are many well-studied axioms commonly used in practice
 that are worth considering as extensions in their own right.
+The axioms described here are included in many standard libraries,
+and proof developments can choose whether to import them.
 
-\paragraph{Extensional principles.}
+\paragraph{Extensionality principles.}
 Some models of type theory semantically equate things
 that are not syntactically (either definitionally or propositionally) equal;
-extensional principles adds semantic equalities as propositional equalities.
+extensionality principles adds semantic equalities as propositional equalities.
 Examples include \emph{function extensionality},
 which equates two functions if they are pointwise equal,
 and \emph{propositional extensionality},
@@ -882,14 +886,13 @@ of orthogonal univalence and UIP extensions can handle the same proof load.
 \Cref{sec:multi} discusses some more details about 2LTT.
 
 The useability of the implementation would inform the design of the system,
-especially for considerations beyond DCOI,
 such as level inference and level polymorphism.
 Annotating definitions and arguments with every single extension it uses
 is an unreasonable burden on a proof assistant user.
 The prototype implementation accompanying DCOI~\citep{dcoi-artifact}
 therefore has rudimentary level inference, defaulting to a minimum level.
-However, the lattice implemented is the usual order of the naturals,
-and the examples provided typically use no more than two levels.
+However, the prototype's lattice is the usual order of the naturals,
+and its examples typically use no more than two levels.
 An implementation with a lattice containing incompatible extensions
 and applications that involve more than two theories
 would pinpoint what is required from level inference in practice
@@ -1072,7 +1075,11 @@ and is designed to be suitable as a core calculus
 of the Glasgow Haskell Compiler~\citep{ghc};
 as such, it deals with explicit coercion proofs.
 In contrast to PCC$^\theta$,
-System DE has the type-in-type rule and large elimination in the programmatic fragment.
+System DE does not permit using a programmatic value as a logical value,
+so its logical relation proof does not require partial step-indexing
+to interpret the programmatic fragment.
+Consequently, System DE is able to include
+the type-in-type rule and large elimination in the programmatic fragment.
 
 \subsection{Other proof assistants}
 
