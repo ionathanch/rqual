@@ -87,7 +87,7 @@ which propositionally equates all proofs of the same equality,
 is incompatible with \emph{univalence},
 which adds additional and provably distinct proofs of equality.
 In \cref{sec:extensions},
-I describe these extensions and more found in select proof assistants,
+I describe these extensions and a few more found in select proof assistants,
 and the ways some combinations are incompatible.
 
 Thus proof assistants are careful to track
@@ -116,7 +116,7 @@ Even if we do not have access to a particular level,
 terms at that level can still be manipulated and reasoned about
 as long as they are not inspected or evaluated.
 
-I have worked on a type system with dependency tracking,
+I have worked on a dependent type system with dependency tracking,
 the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
 along with its variant DCOI$^\omega$~\citep{dcoi-omega},
 which is a logically consistent type theory.
@@ -229,7 +229,7 @@ $\mathit{getNat} \; m \; b_1$ and $\mathit{getNat} \; m \; b_2$ reduce to $n_1$ 
 While we have an equality $n_1 \equiv n_2$,
 we do \emph{not} have a proof of $p_1 \equiv p_2$%
 \footnote{Technically, this requires a proof of the equality
-where $p_1$ has been transported across the equality $e$
+where $p_1$ has been transported across the equality $n_1 \equiv n_2$
 so that it has the same type as $p_2$.}.
 Depending on how $\cdot \le \cdot$ is implemented,
 it may be possible to prove propositionally that any two inequality proofs are equal.
@@ -587,7 +587,7 @@ Though the example only uses two levels $\LL$ and $\HH$,
 any instance of DCOI is parametrized over some meet-semilattice,
 from which its dependency levels are drawn.
 Rather than tracking relevance or information flow,
-the goal of this report is track extensions
+the goal is to track extensions
 using a lattice that associates dependency levels to sets of added extensions.
 Before discussing this mapping in \cref{sec:lattice},
 I summarize shortly the relevant key aspects and properties of DCOI
@@ -919,7 +919,7 @@ but the annotations are universe levels.
 Instead of stratifying universes into a hierarchy,
 typing judgements themselves are stratified,
 and there is a single universe whose type is itself.
-To ensure consistency in the presence of type-in-type,
+To ensure consistency in the presence of this \emph{type-in-type} rule,
 dependent functions may only quantify over types at strictly lower levels,
 which enforces predicativity.
 Although StraTT is not a dependency tracking system in the same way DCOI is,
@@ -1006,7 +1006,7 @@ and is designed to be suitable as a core calculus
 of the Glasgow Haskell Compiler~\citep{ghc};
 as such, it deals with explicit coercion proofs.
 In contrast to PCC$^\theta$,
-System DE has the type-in-type axiom and large elimination in the programmatic fragment.
+System DE has the type-in-type rule and large elimination in the programmatic fragment.
 
 \subsection{Other proof assistants}
 
@@ -1042,6 +1042,23 @@ which get compiled away to the new core calculus TotalF$^\star$~\citep{total-fst
 divergence aside, effects do not extend the internal type system.
 
 \section{Conclusion}
+
+In this report, I have described a number of common extensions
+to proof assistants that alter their core type theory when enabled.
+These proof assistants have mechanisms for tracking extensions
+and ensuring that incompatible extensions may not be used together.
+However, extension tracking is external to the type system,
+and internalizing them opens up opportunities
+for greater precision and expressivity in specifying extension usage.
+Such an internalization of extension tracking is reminiscent of dependency analysis,
+and in particular of the Dependent Calculus of Indistinguishability (DCOI),
+which tracks usage of terms at different dependency levels.
+Although primary applications of DCOI are information flow and irrelevance,
+I use it as inspiration for a framework that tracks extensions in the same way,
+incorporating multiple type theories in one system.
+Much work lies ahead to discover the practical expressivity of such a system,
+as well as its logical consistency,
+for its viability as a core for a proof assistant with extensions.
 
 \clearpage
 \noindent
