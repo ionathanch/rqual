@@ -81,7 +81,7 @@ In practice, a proof assistant doesn't implement merely one type theory,
 but a whole host of them, as they include language extensions
 that augment or modify its reasoning power.
 
-These type theoretic extensions consists of new typing rules,
+These type theoretic extensions consist of new typing rules,
 axioms, constructs, and/or definitional equalities.
 Because each extension embodies semantically distinct reasoning principles,
 enabling an extension results in a separate theory altogether.
@@ -109,7 +109,7 @@ to prove properties about definitions in the other theory
 if those theories are incompatible.
 For instance, considering classical axioms as a language extension,
 one would not be able to explore what is constructively proveable
-about classical principles.
+about theories that use classical principles.
 
 Ultimately, what is missing is a framework for describing
 fine-grained control of proofs and programs across multiple type theories,
@@ -117,7 +117,7 @@ where even incompatible theories can interact in interesting ways.
 This fine-grained control of terms is reminiscent of
 type systems with \emph{dependency analysis}.
 In such systems, terms are stratified by \emph{dependency levels},
-which can be thought of intuitively as permission levels tracking permitted usages.
+which can be thought of intuitively as permission levels tracking where terms may be used.
 Even if we do not have access to a particular level,
 terms at that level can still be manipulated and reasoned about
 as long as they are not inspected or evaluated.
@@ -238,7 +238,7 @@ we do \emph{not} have a proof of $p_1 \equiv p_2$%
 \footnote{Technically, this should be a proof of the equality
 where $p_1$ has been rewritten by the equality $n_1 \equiv n_2$
 so that it has the same type as $p_2$.}.
-Depending on how $\cdot \le \cdot$ is implemented,
+Depending on how the inequality predicate $\cdot \le \cdot$ is implemented,
 it may be possible to prove propositionally that any two inequality proofs are equal.
 Alternatively, if propositions are definitionally proof irrelevant,
 the inequality proofs can be ignored.
@@ -403,7 +403,7 @@ $\forall (A \; B : \kw{Prop})\mathpunct{.} ((A \to B) \to A) \to A$.
 More powerful axioms which imply EM include the axiom of choice
 and the (in)definite description operators,
 which deal with extracting a concrete piece of data
-out of merely knowing that such a piece of data exists without constructing it.
+out of merely knowing that such a piece of data exists.
 
 Because a large majority of mathematics is done classically,
 many communities mechanizing mathematics freely use classical principles.
@@ -420,8 +420,8 @@ and tactics such as \code{tauto} automatically apply classical reasoning.
 
 \subsection{Extensions and inconsistencies}
 
-One has to be careful that a chosen set of features and axioms
-do not render the type theory logically inconsistent and thus useless for proving.
+One has to be careful not to choose a set of features and axioms
+that render the type theory logically inconsistent and thus useless for proving.
 A number of them are known to be incompatible with one another;
 below are a few such combinations.
 
@@ -930,7 +930,7 @@ from one theory to a different, incompatible theory.
 In addition, while a function can quantify over terms at specific levels,
 it cannot quantify over \emph{all} levels,
 nor over levels that satisfy some ordering constraint.
-Having a lot of examples in the implementation
+Having a library of examples in the implementation
 would reveal whether these are real concerns to be addressed
 and what kind of level polymorphism could address them.
 
