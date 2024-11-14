@@ -615,10 +615,30 @@ its domain and codomain types are syntactically different applications of $P$,
 but this judgement still holds due to \emph{indistinguishability}.
 
 \paragraph{Indistinguishability.}
-In general, if $\ell_1 < \ell_2$, then at observer level $\ell_1$,
-the function application $f \; x^{\ell_2}$ must be equal
-to $f \; y^{\ell_2}$ regardless of what $x$ and $y$ are.
-We say that they are \emph{indistinguishable} at level $\ell_1$.
+In general, if $\ell_0 < \ell_1$, then at observer level $\ell_0$,
+the function application $f \; x^{\ell_1}$ must be equal
+to $f \; y^{\ell_1}$ regardless of what $x$ and $y$ are.
+We say that they are \emph{indistinguishable} at level $\ell_0$,
+written as $\cdot =^{\ell_0} \cdot$.
+Below are the two different rules for indistinguishability of a function application
+depending on the observer level $\ell_0$ and the argument level $\ell_1$.
+%
+\begin{mathpar}
+  \infer[I-app-indist]{
+    \Gamma \vdash f =^{\ell_0} g \and \ell_0 < \ell_1
+  }{
+    \Gamma \vdash f \; a^{\ell_1} =^{\ell_0} g \; b^{\ell_1}
+  }
+  \and
+  \infer[I-app-dist]{
+    \Gamma \vdash f =^{\ell_0} g \and
+    \Gamma \vdash a =^{\ell_1} b \and
+    \ell_0 \not< \ell_1
+  }{
+    \Gamma \vdash f \; a^{\ell_1} =^{\ell_0} g \; b^{\ell_1}
+  }
+\end{mathpar}
+%
 Indistinguishability plays the r\^ole of definitional equality
 when checking whether two types are the same.
 This is why the above example type checks,
@@ -629,17 +649,25 @@ $k \; x^\LL \; y^\HH$ is indistinguishable from $k \; x^\LL \; z^\HH$ at low,
 which expresses the idea that $k$ is truly constant in its second argument.
 
 DCOI internalizes indistinguishability by indexing
-its propositional equality type with an observer level.
+its propositional equality type with an observer level,
+reflected by the rule for reflexivity below.
 In particular, the propositional equality
 $k \; x^\LL \; y^\HH \equiv^\LL k \; x^\LL \; z^\HH$
 is provable by reflexivity since the two sides are already indistinguishable
 at low, the observer level of the equality.
+%
+\begin{mathpar}
+  \infer[]{
+    \Gamma \vdash a =^{\ell_0} b
+  }{
+    \Gamma \vdash \kw{refl} :^{\ell} a \equiv^{\ell_0} b
+  }
+\end{mathpar}
 
 \paragraph{Elimination of higher falsehoods.}
 The principle that lower-level terms may not meaningfully depend
-on higher-level terms means that,
-just as lower-level functions may not return higher-level arguments,
-destructors that return lower-level terms may not destruct higher-level terms.
+on higher-level terms means that
+destructors that produce lower-level terms may not destruct higher-level terms.
 This holds even if the term being destructed contains no inner information
 (such as $\top$ or an equality proof),
 since reducing the destruction on a constructor requires knowing
@@ -647,22 +675,58 @@ whether the term being destructed is a constructor at all.
 
 The sole exception is the eliminator for $\bot$,
 since it has no constructors, so there is no information to reveal.
+It is well typed at any level independent of its target $b$ or its type $A$.
+%
+\begin{mathpar}
+  \infer[]{
+    \Gamma \vdash b :^{\ell_0} \bot \and
+    \Gamma \vdash A :^{\ell_1} \kw{Type}_i
+  }{
+    \Gamma \vdash \kw{absurd} \; b :^{\ell} A
+  }
+\end{mathpar}
+%
 The computational interpretation of having a proof of $\bot$ to eliminate
 is that we have reached an impossible dead branch,
 so what we do with it never matters since it never executes.
-The ability to eliminate higher-level proofs of falsehood into lower-level terms
-is useful when the type of a function rules out a particular branch,
-and the function needs to be assigned a lower level than its type.
+For example, suppose we have a cons list, a function to compute its length,
+and a proof that no natural is strictly less than zero.
+We can define a function that safely extracts the head of a nonempty list
+by using $\kw{absurd}$ to handle the impossible empty list case.
+%
+\begin{align*}
+  \mathit{length} &: \Pi (A : \kw{Type}) \mathpunct{.} \kw{List} \; A \to \kw{Nat} \\
+  \mathit{zeroNotGt} &: \forall (n : \kw{Nat}) \mathpunct{.} n < 0 \to \bot \\
+  \mathit{safeHead} &: \Pi (A : \kw{Type}) (l : \kw{List} \; A) \to 0 < \mathit{length} \; l \to A \\
+  \mathit{safeHead} & \; A \; \kw{nil} \; p \coloneqq \kw{absurd} \; (\kw{zeroNotGt} \; 0) \\
+  \mathit{safeHead} & \; A \; (\kw{cons} \; x \; xs) \; p \coloneqq x
+\end{align*}
 
 \paragraph{Subsumption and downgrading.}
 While lower-level terms cannot inspect higher-level terms,
 higher-level terms can inspect lower-level terms.
 A lower-level term can also be raised to a higher level by \emph{subsumption}:
-if a term is well typed at level $\ell_1$,
-then it is also well typed with the same type at a higher level $\ell_2 > \ell_1$.
-
-However, if two terms are indistinguishable by some observer level $\ell_2$,
-then they are indistinguishable by a \emph{lower} observer level $\ell_1$ by \emph{downgrading}.
+if a term is well typed at level $\ell_0$,
+then it is also well typed with the same type at a higher level $\ell_1 \ge \ell_0$.
+This admissible rule is given below on the left.
+%
+\begin{mathpar}
+  \infer[subsumption]{
+    \Gamma \vdash a :^{\ell_0} A \and \ell_0 \le \ell_1
+  }{
+    \Gamma \vdash a :^{\ell_1} A
+  }
+  \and
+  \infer[downgrade]{
+    \Gamma \vdash a \equiv^{\ell_1} b \and \ell_0 \le \ell_1
+  }{
+    \Gamma \vdash a \equiv^{\ell_0} b
+  }
+\end{mathpar}
+%
+However, if two terms are indistinguishable by some observer level $\ell_1$,
+then they are indistinguishable by a \emph{lower} observer level $\ell_0$ by \emph{downgrading},
+given above on the right.
 From a security flow perspective, the higher the observer level,
 the more secure values may be observed,
 and the more things are distinguishable,
