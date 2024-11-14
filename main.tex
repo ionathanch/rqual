@@ -740,14 +740,16 @@ so more values appear to be indistinguishable from one another.
 
 \section{Lattices of type theories} \label{sec:lattice}
 
-To track extensions on top of a base type theory,
-we begin with a bottom dependency level corresponding to this base.
-Each new dependency level above the bottom would contain one additional construct
-corresponding to a new feature or axiom.
-For instance, there could be a K eliminator that type checks
-only at a level for UIP and above,
-or a built-in excluded middle axiom that type checks
-only at a level for classical reasoning and above.
+The key premise of using DCOI for extension tracking
+is associating dependency levels with various type theories,
+creating a lattice whose points are the sets of extensions
+enabled in each theory, ordered by subset.
+We begin with a bottom dependency level for the base type theory
+corresponding to the empty set of extensions.
+For each additional construct corresponding to a feature of axiom,
+we add a new dependency level above the theory it extends.
+For instance, there could be a K eliminator that type checks at a level for UIP,
+or a built-in excluded middle axiom that type checks at a level for classical reasoning.
 %
 \begin{align*}
   \kw{K} \; P \; p \; d :^{\kw{uip}} P \; p &&
@@ -766,10 +768,10 @@ uses of values from higher forbidden theories can only be trivial,
 such as ignoring the value or passing it around uninspected.
 
 As dependency levels form a meet-semilattice,
-any two theories must have a meet,
+any two theories must have a meet (\ie intersection),
 which corresponds to only the constructs that they both have in common,
 and which are therefore safe to use in either theory.
-If the join of two theories exist,
+If the join (\ie union) of two theories exist,
 then the constructs introduced in either one can be used at the joined level.
 Crucially, not all joins exist; a UIP level cannot be joined with a univalence level,
 since their co\"existence is contradictory.
@@ -825,7 +827,22 @@ and the extension will be available to all lower theories.
 This effect cannot be mitigated using restrictive premises,
 as violating downgrading violates many other desirable properties,
 including transitivity of definitional equality~\citep{dcoi-omega}.
-\note{What \emph{does} this mean for $\kw{SProp}$??}
+
+Consequently, adding strictness to an existing $\kw{Prop}$ universe
+rather than adding an entirely separate $\kw{SProp}$ universe is not be possible,
+as the type checker can lift two proofs at a non--proof-irrelevant level
+up to the proof-irrelevant level and equate them there.
+One solution is to invert the conventional order
+and place non-strict $\kw{Prop}$ \emph{above} strict $\kw{Prop}$,
+so that \emph{disabling} strictness is an extension.
+The inversion slightly complicates the lattice in \cref{fig:lattice},
+as the level with propositional UIP via the K eliminator
+would be above the level with propositional equality in non-strict $\kw{Prop}$,
+which in turn would be above the level with equality in strict $\kw{Prop}$
+and thus with definitional UIP.
+Such a lattice has the unusual property that the univalent level
+would be joinable with the non-strict $\kw{Prop}$ level,
+but not with the UIP or strict $\kw{Prop}$ levels above and below it.
 
 \subsection{Objectives}
 
