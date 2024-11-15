@@ -77,9 +77,9 @@ a corresponding type in a dependent type theory.
 These type theories are typically based on some flavour of
 Martin-L\"of Type Theory (MLTT)~\citep{mltt}
 or the Calculus of Inductive Constructions (CIC)~\citep{cic}.
-In practice, a proof assistant doesn't implement merely one type theory,
+In practice, a proof assistant does not implement merely one type theory,
 but a whole host of them, as they include language extensions
-that augment or modify its reasoning power.
+that augment or modify their reasoning power.
 
 These type theoretic extensions consist of new typing rules,
 axioms, constructs, and/or definitional equalities.
@@ -87,20 +87,23 @@ Because each extension embodies semantically distinct reasoning principles,
 enabling an extension results in a separate theory altogether.
 However, some extensions are mutually incompatible and cannot be enabled simultaneously
 because together they violate logical consistency.
-For instance, \emph{uniqueness of identity proofs},
+For instance, the \emph{uniqueness of identity proofs},
 which propositionally equates all proofs of the same equality,
 is incompatible with \emph{univalence},
-which adds additional and provably distinct proofs of equality.
+which new provably distinct proofs of equality.
 In \cref{sec:extensions},
 I describe these extensions and a few more found in select proof assistants,
-and the ways some combinations are incompatible.
+along with the ways some combinations are incompatible.
 
-Thus proof assistants are careful to track
+Proof assistants are careful to track
 the usage of language extensions to rule out inconsistencies.
 However, the tracking done by their type checkers is \emph{external} to the type system:
 within the language itself,
 one cannot assert that a definition is permitted to depend on a particular extension,
 nor that it is prohibited from using an extension.
+Being able to specify exactly where the need for various extensions comes from
+helps us be more mindful about enabling them,
+especially if they prevent future reuse of definitions due to incompatible extensions.
 Furthermore, given two incompatible extensions,
 a definition in one extension's theory may not be used at all
 in the another extension's theory, not even just in a type.
@@ -127,7 +130,7 @@ the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
 along with its variant DCOI$^\omega$~\citep{dcoi-omega},
 which is a logically consistent type theory.
 DCOI could potentially be used as a basis for a framework
-which internalizes extension tracking by stratifying
+that internalizes extension tracking by stratifying
 their corresponding type theories into hierarchies of dependency levels,
 where compatibility between extensions maps to the intuitive notion of permission.
 I describe the key properties of DCOI relevant for this application in \cref{sec:dcoi}.
@@ -173,7 +176,7 @@ $$\mathit{dn}: \forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P,$$
 the double negation of this proposition itself holds as well by self-application.
 $$\mathit{dn} \; (\forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P) \; \mathit{dn} : \neg \neg (\forall (P : \kw{Prop})\mathpunct{.} P \to \neg \neg P)$$
 In contrast, in the predicative setting,
-a quantification over a universe $\kw{Type}_0 : \kw{Type}_1$ itself has type $\kw{Type}_1$,
+a quantification over a universe $\kw{Type}_0 : \kw{Type}_1$ has type $\kw{Type}_1$,
 and in particular,
 $$\Pi (A : \kw{Type}_0)\mathpunct{.} A \to \neg \neg A : \kw{Type}_1,$$
 so an element of this type may not be applied to the type itself.
@@ -292,14 +295,14 @@ Strong elimination is a necessary ingredient in discriminating constructors
 of proof-relevant datatypes, such as the booleans.
 While $\kw{true}$ and $\kw{false}$ are syntactically distinct,
 proving their propositional inequivalence requires lifting the booleans
-to propositions truthhood $\top$ and falsehood $\bot$.
+to the propositions of truthhood $\top$ and falsehood $\bot$.
 %
 \begin{align*}
   \mathit{lift} &: \kw{Bool} \to \kw{Prop} \\
   \mathit{lift} &\coloneqq \lambda b \mathpunct{.} \kw{if} \; b \; \kw{then} \; \top \; \kw{else} \; \bot
 \end{align*}
 %
-The branching expression is a strong elimination because it returns a type,
+This branching expression is a strong elimination because it returns a type,
 or equivalently because its return type is $\kw{Prop}$, a universe.
 Letting $\kw{cong} \; f$ be a proof of congruence of $f$ over an equality,
 to complete the proof of $\kw{true} \equiv \kw{false} \to \bot$,
@@ -346,7 +349,7 @@ Another example is \emph{univalence},
 which asserts an equivalence between propositional equality and equivalence,
 \ie given two types $A, B$,
 the equivalence $(A \equiv B) \simeq (A \simeq B)$ holds.
-This is the core principle underlying Homotopy Type Theory~\citep{hott}.
+This is the core principle underlying Homotopy Type Theory (HoTT)~\citep{hott}.
 There are several ways to define equivalence;
 the idea is that it captures a propositionally proof-irrelevant isomorphism.
 Univalence together with proof irrelevance implies propositional extensionality,
@@ -356,8 +359,7 @@ Univalence alone also implies function extensionality
 by a more complex argument~\cite[Chapter 4.9]{hott}.
 
 One application of function and propositional extensionality
-is encountered when encoding a function as a relation
-whose functionality is proven \apost.
+is encoding a function as a relation whose functionality is proven \apost.
 This is a frequent pattern in proof assistants,
 as inductive relations often have better ergonomic support
 than dependently-typed reasoning over functions.
@@ -406,7 +408,7 @@ which deal with extracting a concrete piece of data
 out of merely knowing that such a piece of data exists.
 
 Because a large majority of mathematics is done classically,
-many communities mechanizing mathematics freely use classical principles.
+many communities freely use classical axioms when mechanizing mathematics.
 The axiom of excluded middle, for instance,
 is declared in Rocq as \code{Logic.Classical\_Prop.classic},
 and in Lean as \code{em}.
@@ -429,8 +431,8 @@ below are a few such combinations.
   \item Strong elimination is inconsistent for large impredicative inductives.
     \citet{strong-pair} show that impredicative dependent pairs with pair projections,
     which correspond to strong elimination, are inconsistent.
-    \citet{trees} also demonstrates the inconsistency with an inductive type $U$
-    with a single constructor of type
+    \citet{trees} also demonstrates the inconsistency of strongly eliminating
+    a large inductive type $U$ with a single constructor of type
     $\forall (X : \kw{Prop})\mathpunct{.} (X \to U) \to U$.
   \item Strong elimination is also inconsistent for inductive propositions
     when $\kw{Prop}$ is proof irrelevant.
@@ -474,7 +476,7 @@ below are a few such combinations.
 \Cref{fig:lattice} illustrates some of these relationships between extensions.
 The arrows point from one theory to a strictly more expressive one;
 for instance, a theory with propositional extensionality extends the equalities
-of a theory with a universe of propositions,
+of a theory containing a universe of propositions,
 and a theory with univalence can derive function extensionality.
 At the top of the graph, the dotted arrows indicate
 the incompatibility of a theory that implies UIP with one that contains univalence:
@@ -490,7 +492,7 @@ such as $\top$, $\bot$, and conjunction of propositions.
 While Rocq's impredicative $\kw{Prop}$ universe is not proof irrelevant,
 Rocq still forbids strong elimination even for inductives that are not large
 to allow the use of classical principles.
-Its compiler flag \code{-impredicative-set} enables impredicativity for $\kw{Set}$
+Its compiler flag \code{-impredicative-set} enables impredicativity for its $\kw{Set}$ universe
 while still allowing strong elimination of small impredicative inductives,
 but this flag is not well supported.%
 \footnote{\url{https://github.com/coq/coq/issues/9458}}
@@ -502,12 +504,12 @@ There is also a \code{-{}-safe} flag which disallows,
 among other combinations,
 having both \code{-{}-with-K} and \code{-{}-cubical}.
 
-Proof assistants also provide some limited ability in tracking the usage of features and axioms.
+Proof assistants provide some limited ability in tracking the usage of features and axioms.
 In Rocq, the axioms and unsafe flags used by a definition
 can be listed using the command \code{Print Assumptions},
 while in Lean, the axioms can be listed using \code{\#print axioms}.
 In Agda, along with checking for inconsistent option combinations,
-\code{-{}-safe} also ensures the absence of any \code{postulate}s.
+\code{-{}-safe} ensures the absence of any \code{postulate}s.
 Because option flags can be enabled at module-level granularity,
 Agda also has notion of \emph{(co)infective} flags:
 an infective flag used in one module
@@ -545,7 +547,7 @@ I have identified three shortcomings these systems.
     For example, when both \code{-{}-safe} and \code{-{}-with-K} are enabled in Agda,
     definitions from modules with \code{-{}-cubical} cannot be mentioned anywhere.
     However, it should be acceptable to use a theory with UIP
-    to state and prove the properties of univalence,
+    to state and prove properties of univalence,
     while never eliminating an equality derived from univalence.
     To generalize, definitions from an incompatible extension
     should be permitted in the type of a term but restricted in the term itself,
@@ -571,7 +573,7 @@ on both the variables in the context,
 to indicate how they may be used by the term being typed,
 and alongside the type of the term,
 to indicate how the term itself may be used.
-As an example, consider the following derivable typing judgement for a constant function.
+As an example, consider the following typing judgement for a constant function.
 $$A :^\HH \kw{Type} \vdash \lambda x^\LL \; y^\HH \mathpunct{.} x :^\LL
   A^\LL \to A^\HH \to A$$
 The concrete levels used here are low ($\LL$) and high ($\HH$) where $\LL < \HH$.
@@ -585,8 +587,8 @@ and may even be erased away after compilation.
 
 This constant function at low,
 which returns its first argument $x$ and ignores its second argument $y$,
-must therefore mark $x$ and its type as low to return it.
-Marking $y$ and its type as high guarantees that the function could not return it.
+must therefore mark $x$ as low to return it.
+Marking $y$ as high guarantees that the function may not return it.
 While the body of the low function cannot return a high argument,
 its \emph{type} can depend on a high term,
 demonstrated by the high-annotated type $A$ in the context,
@@ -596,9 +598,8 @@ but is otherwise permitted to participate in compile-time type checking.
 
 Other terms we may wish to mark as high are proofs
 to guarantee that a compiler can erase them away after type checking.
-For instance, a length function on a computationally relevant list would return a relevant natural,
-while a proof that no relevant natural is strictly less than zero
-would be marked as irrelevant.
+For instance, a length function on a computationally relevant list would return a relevant natural;
+in contrast, a proof that no relevant natural is strictly less than zero would be marked as irrelevant.
 %
 \begin{align*}
   \mathit{length} &:^\LL \Pi (A :^\HH \kw{Type}) \; (l :^\LL \kw{List} \; A) \mathpunct{.} \kw{Nat} \\
@@ -622,10 +623,9 @@ but is a relative concept between any two ordered dependency levels.
 Suppose there is a super-high level $\SS$ such that $\LL < \HH < \SS$.
 Then just as a low term may not meaningfully use a high term,
 a high term also may not meaningfully use a super-high term.
-The following derivable typing judgement demonstrates
-how these three levels can interact.
+The following typing judgement demonstrates an application of these three levels.
 $$P :^\HH \kw{Nat}^\SS \to \kw{Prop}, n :^\SS \kw{Nat} \vdash \lambda p^\LL \mathpunct{.} p :^\LL
-  (P \; s^\SS)^\LL \to P \; (s + 1)^\SS$$
+  (P \; n^\SS)^\LL \to P \; (n + 1)^\SS$$
 In the context, $n$ is a super-high natural,
 and $P$ is a high predicate which takes as argument a super-high natural.
 Once again, the term being typed is a low function,
@@ -662,10 +662,9 @@ depending on the observer level $\ell_0$ and the argument level $\ell_1$.
 Indistinguishability plays the r\^ole of definitional equality
 when checking whether two types are the same.
 This is why the above example type checks,
-since $P \; s^\SS$ is indistinguishable from $P \; (s + 1)^\SS$ at high,
-the level of $P$.
+since $P \; n^\SS =^\HH P \; (n + 1)^\SS$ holds.
 Similarly, naming the low-level constant function above $k$,
-$k \; x^\LL \; y^\HH$ is indistinguishable from $k \; x^\LL \; z^\HH$ at low,
+$k \; x^\LL \; y^\HH =^\LL k \; x^\LL \; z^\HH$ holds,
 which expresses the idea that $k$ is truly constant in its second argument.
 
 DCOI internalizes indistinguishability by indexing
@@ -776,8 +775,8 @@ A definition that can be typed at the bottom level
 would be safe to be used at all levels by subsumption,
 and guaranteed to never employ, say, classical reasoning.
 Indistinguishability reflects this guarantee, as it asserts the property that
-uses of values from higher forbidden theories can only be trivial,
-such as ignoring the value or passing it around uninspected.
+uses of terms from higher forbidden theories can only be trivial,
+such as ignoring it or passing it around uninspected.
 
 As dependency levels form a meet-semilattice,
 any two theories must have a meet (\ie intersection),
@@ -796,13 +795,13 @@ is an example of a concrete lattice of theories,
 where the arrows point towards the greater theory
 and indicate the direction in which definitions can be raised.
 
-The property that the type of a term can itself be well typed at any other level
+The property that the type of a term can itself
+be well typed at a level independent of the term's
 permits proving propositions about an incompatible theory
 without causing an inconsistency.
 For example, we can assert the computational behaviour of the K eliminator
 even in a theory with univalence.
 %
-\vspace{-\baselineskip}
 \begin{align*}
   \kw{refl} :^{\kw{ua}} \kw{K} \; P \; \kw{refl} \; d \equiv^{\kw{uip}} d
 \end{align*}
@@ -833,7 +832,7 @@ preventing its propagating to lower theories.
 
 One catch is that a theory whose extension is a new definitional equality
 (\ie a new rule for indistinguishability) cannot be contained within its level.
-Even if that equality is defined for a given observer level,
+Even if that equality is defined for a particular observer level,
 it will hold for all lower observer levels by downgrading,
 and the extension will be available to all lower theories.
 This effect cannot be mitigated using restrictive premises,
@@ -905,7 +904,7 @@ by demonstrating the inconsistencies they yield.
 Additionally, writing and checking large proofs would be feasible,
 which helps with exploring more complex applications.
 One example is computing \emph{semisimplicial types},
-which is an open problem in Homotopy Type Theory~\citep{hott}.
+which is an open problem in HoTT.
 Two-level type theory (2LTT)~\citep{2ls,2ltt} is one solution
 that contains separate theories with univalence and with UIP,
 and Agda implements 2LTT as the \code{-{}-two-level} extension.
@@ -957,7 +956,7 @@ only one level above the base theory, the simplest nontrivial lattice.
 The focus would be on how to combine two different models of type theory,
 not on accommodating as many as possible from the outset.
 
-A sensible starting point would be the mechanization of DCOI$^\omega$~\cite{dcoi-omega},
+A sensible starting point would be taking the mechanization of DCOI$^\omega$~\citep{dcoi-omega},
 which proves consistency and normalization of what would be the base theory in the lattice,
 and picking a reasonable feature to extend it with.
 UIP and function extensionality are good candidates,
@@ -1046,7 +1045,7 @@ These inner and outer levels are different from dependency levels in DCOI,
 where all levels share the same type formers,
 and a lower equality can be raised to a higher equality by subsumption.
 In particular, if a lattice of type theories includes one that supports UIP,
-then that level will prove that proofs of the same equality at \emph{all} levels are themselves equal.
+then that level will prove that proofs of the same equality at \emph{all} levels are equal.
 Meanwhile, in 2LTT, UIP only holds for proofs the outer equality
 and not for converted proofs of the inner equality.
 
