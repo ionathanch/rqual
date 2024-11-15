@@ -594,7 +594,18 @@ which is used in the type of the function.
 The intuition is that $A$ does not play a part in the run-time execution of the constant function,
 but is otherwise permitted to participate in compile-time type checking.
 
-Though the example only uses two levels $\LL$ and $\HH$,
+Other terms we may wish to mark as high are proofs
+to guarantee that a compiler can erase them away after type checking.
+For instance, a length function on a computationally relevant list would return a relevant natural,
+while a proof that no relevant natural is strictly less than zero
+would be marked as irrelevant.
+%
+\begin{align*}
+  \mathit{length} &:^\LL \Pi (A :^\HH \kw{Type}) \; (l :^\LL \kw{List} \; A) \mathpunct{.} \kw{Nat} \\
+  \mathit{zeroNotGt} &:^\HH \forall (n :^\LL \kw{Nat}) \; (p :^\HH n < 0) \mathpunct{.} \bot
+\end{align*}
+
+Though these examples only use two levels $\LL$ and $\HH$,
 any instance of DCOI is parametrized over some meet-semilattice,
 from which its dependency levels are drawn.
 Rather than tracking relevance or information flow,
@@ -698,17 +709,13 @@ It is well typed at any level independent of its target $b$ or its type $A$.
 The computational interpretation of having a proof of $\bot$ to eliminate
 is that we have reached an impossible dead branch,
 so what we do with it never matters since it never executes.
-For example, suppose we have a cons list, a function to compute its length,
-and a proof that no natural is strictly less than zero.
-We can define a function that safely extracts the head of a nonempty list
+For example, we can define a function that extracts the head of a nonempty list
 by using $\kw{absurd}$ to handle the impossible empty list case.
 %
 \begin{align*}
-  \mathit{length} &: \Pi (A : \kw{Type}) \mathpunct{.} \kw{List} \; A \to \kw{Nat} \\
-  \mathit{zeroNotGt} &: \forall (n : \kw{Nat}) \mathpunct{.} n < 0 \to \bot \\
-  \mathit{safeHead} &: \Pi (A : \kw{Type}) (l : \kw{List} \; A) \to 0 < \mathit{length} \; l \to A \\
-  \mathit{safeHead} & \; A \; \kw{nil} \; p \coloneqq \kw{absurd} \; (\kw{zeroNotGt} \; 0) \\
-  \mathit{safeHead} & \; A \; (\kw{cons} \; x \; xs) \; p \coloneqq x
+  \mathit{head} &:^\LL \Pi (A :^\HH \kw{Type}) (l :^\LL \kw{List} \; A) \; (p :^\HH 0 < \mathit{length} \; l^\LL) \mathpunct{.} A \\
+  \mathit{head} & \; A \; \kw{nil} \; p \coloneqq \kw{absurd} \; (\kw{zeroNotGt} \; 0^\LL) \\
+  \mathit{head} & \; A \; (\kw{cons} \; x \; xs) \; p \coloneqq x
 \end{align*}
 
 \paragraph{Subsumption and downgrading.}
