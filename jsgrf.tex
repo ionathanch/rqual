@@ -1,0 +1,203 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+\usepackage{mlmodern}
+\usepackage{amsmath,amssymb}
+\usepackage[english]{babel}
+\usepackage[square, authoryear]{natbib}
+\usepackage[colorlinks,citecolor=blue]{hyperref}
+\usepackage[capitalize,noabbrev,nameinlink]{cleveref}
+\usepackage[margin=2\parindent]{caption}
+\usepackage{mathpartir,mathtools,stmaryrd}
+\usepackage{enumitem,doi,xspace,minted,tikz-cd}
+
+\title{\textbf{Internalizing Extensions \\ in Lattices of Type Theories}}
+\author{Jonathan Chan}
+\date{\vspace{-\baselineskip}}
+
+\bibliographystyle{ACM-Reference-Format}
+
+% If needed, define \crefrangeformat, \crefmultiformat, \crefrangemultiformat
+\crefformat{question}{#2Question~#1#3}
+\Crefformat{question}{#2Question~#1#3}
+
+\newcommand{\note}[1]{\textcolor{red}{[#1]}}
+\newcommand{\ie}{\textit{i.e.}\@\xspace}
+\newcommand{\eg}{\textit{e.g.}\@\xspace}
+\newcommand{\apost}{\textit{a posteriori}\@\xspace}
+\newcommand{\kw}[1]{\mathsf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\HH}{\mathsf{H}}
+\newcommand{\LL}{\mathsf{L}}
+\renewcommand{\SS}{\mathsf{S}}
+\newcommand{\oo}{\mathsf{s}}
+\newcommand{\ii}{\mathsf{p}}
+
+\begin{document}
+\maketitle
+
+Proof assistants such as Rocq~\citep{coq}, Agda~\citep{agda}, and Lean~\citep{lean}
+are tools that automatically check the correctness of mechanized proofs.
+They are founded on the Curry--Howard correspondence,
+which associates logical propositions to types,
+proofs of propositions to terms of the corresponding types,
+and proof checking to type checking.
+Thus, at the core of a proof assistant is a type checker for a type theory,
+typically based on some flavour of Martin-L\"of Type Theory (MLTT)~\citep{mltt}
+or the Calculus of Inductive Constructions (CIC)~\citep{cic}.
+In practice, proof assistants do not implement merely one type theory,
+but a whole host of them, as they include language extensions
+that augment or modify their reasoning power.
+
+These type theoretic extensions consist of new typing rules,
+axioms, constructs, and/or definitional equalities.
+Because each extension embodies semantically distinct reasoning principles,
+enabling an extension results in a separate theory altogether.
+However, some extensions are mutually incompatible and cannot be enabled simultaneously
+because together they violate logical consistency,
+which says that falsehood cannot be proven.
+
+Proof assistants are careful to track
+the usage of language extensions to rule out inconsistencies.
+However, the tracking done by their type checkers is \emph{external} to the type system:
+within the language itself,
+one cannot assert that a definition is permitted to depend on a particular extension,
+nor that it is prohibited from using an extension.
+Being able to specify exactly where the need for various extensions comes from
+helps us be more mindful about enabling them,
+especially if they prevent future reuse of definitions due to incompatible extensions.
+Furthermore, given two incompatible extensions,
+a definition in one extension's theory may not be used at all
+in the another extension's theory, not even just in a type.
+This means one theory cannot be used as a metatheory
+to prove properties about definitions in the other theory
+if those theories are incompatible.
+For instance, considering classical axioms as a language extension,
+one would not be able to explore what is constructively proveable
+about theories that use classical principles.
+
+Ultimately, what is missing is a framework for describing
+fine-grained control of proofs and programs across multiple type theories,
+where even incompatible theories can interact in interesting ways.
+This fine-grained control of terms is reminiscent of
+type systems with \emph{dependency analysis}.
+In such systems, terms are stratified by \emph{dependency levels},
+which can be thought of intuitively as permission levels tracking where terms may be used.
+These levels are structured as a lattice,
+whose order is a subsumption relation:
+a larger (higher) level has more permissions than a smaller (lower) level.
+However, even if we do not have access to a particular  level,
+terms at that level can still be manipulated and reasoned about
+as long as they are not inspected or evaluated.
+
+I have worked on a dependent type system with dependency tracking,
+the Dependent Calculus of Indistinguishability (DCOI)~\citep{dcoi},
+along with its variant DCOI$^\omega$~\citep{dcoi-omega},
+which is a logically consistent type theory.
+DCOI could be used as a basis for a framework
+that internalizes extension tracking by stratifying
+their corresponding type theories into hierarchies of dependency levels.
+This creates a lattice whose points are the sets of extensions
+enabled in each theory, ordered by subset.
+We begin with a bottom dependency level for the base type theory
+corresponding to the empty set of extensions.
+For each additional construct corresponding to an extension,
+we add a new dependency level above the theory it extends.
+
+This project aims to answer the following questions:
+
+\begin{enumerate}
+  \item \label[question]{item:extensions}
+    What kinds of extensions would fit within this framework?
+    Some broad classifications of extensions might be
+    ones that add new type universes,
+    ones that expand the rules for existing constructs,
+    ones that add new computational constructs with reduction rules,
+    and ones that add new axiomatic constructs without reduction rules.
+  \item \label[question]{item:applications}
+    What are useful applications of being able to freely refer to other theories?
+    Are there meaningful theorems about one theory that cannot be proven in that theory,
+    but can be proven in a different yet potentially incompatible theory?
+  \item \label[question]{item:model}
+    How would a particular lattice of theories be modelled
+    to show logical consistency?
+    Ideally, the technique used to model a particular lattice
+    should be broadly applicable and sufficiently extensible
+    to a different lattice without redoing all the work,
+    so that adding more extensions remains sustainable.
+\end{enumerate}
+
+To answer these questions, the project would be divided into two portions.
+The first is an implementation of a type checker for a specific lattice of type theories.
+The lattice should contain a sufficiently diverse set of labels and their orders.
+
+To evaluate the viability of such a type checker,
+a standard library would be implemented to exercise all levels of the lattice.
+The standard libraries of Rocq\footnote{\url{https://coq.inria.fr/distrib/current/stdlib/}},
+Agda\footnote{\url{https://agda.github.io/agda-stdlib/master/}},
+and Lean\footnote{\url{https://leanprover-community.github.io/mathlib4_docs/}}
+are good sources for inspiration,
+as many of their files use various common features and axioms.
+An implementation would also serve to verify which extensions are indeed invalid
+by demonstrating the inconsistencies they yield.
+
+Additionally, writing and checking large proofs would be feasible,
+which helps with exploring more complex applications.
+For example, two-level type theory (2LTT)~\citep{2ls,2ltt}
+is a type theory which contains an inner Homotopy Type Theory~\citep{hott} and an outer MLTT,
+designed so that the outer theory acts as a metatheory for proving things about the inner theory
+that cannot be proven within the inner theory alone.
+We can use libraries\footnote{\url{https://github.com/UnivalencePrinciple/2LTT-Agda}}
+for 2LTT in Agda as inspiration for testing whether this project's implementation
+of the same extensions can handle the same proof load.
+
+The useability of the implementation would inform the design of the system,
+such as level inference and level polymorphism.
+Annotating definitions and arguments with every single extension it uses
+is an unreasonable burden on a proof assistant user.
+The prototype implementation accompanying DCOI~\citep{dcoi-artifact}
+therefore has rudimentary level inference, defaulting to a minimum level.
+However, the prototype's lattice is a total order,
+and its examples typically use no more than two levels.
+An implementation with a lattice containing incompatible extensions
+and applications that involve more than two theories
+would pinpoint what is required from level inference in practice
+for a more sophisticated inference algorithm.
+
+Rewriting libraries in this implementation is also an exercise
+in determining where code duplication occurs
+and whether level polymorphism would help eliminate it.
+Although subsumption allows lifting definitions vertically,
+so to speak, from lower theories to higher ones,
+it does not allow transporting definitions horizontally
+from one theory to a different, incompatible theory.
+In addition, while a function can quantify over terms at specific levels,
+it cannot quantify over \emph{all} levels,
+nor over levels that satisfy some ordering constraint.
+Having a library of examples in the implementation
+would reveal whether these are real concerns to be addressed
+and what kind of level polymorphism could address them.
+
+The second portion is a formalized and ideally mechanized proof of consistency.
+Because consistency is a semantic property and depends on the strength
+of the metatheory used to model the type theory,
+the formalization should model a lattice with (at least at first)
+only one level above the base theory, the simplest nontrivial lattice.
+The focus would be on how to combine two different models of type theory,
+not on accommodating as many as possible from the outset.
+A sensible starting point would be taking the mechanization of DCOI$^\omega$~\citep{dcoi-omega},
+which proves consistency and normalization of what would be the base theory in the lattice,
+and picking a reasonable feature to extend it with.
+
+A possible alternative is to use \emph{syntactic} modelling~\citep{syntactic},
+which would involve a type-preserving translation into another type theory
+whose consistency is well established,
+guaranteeing consistency of the original system.
+While there exist syntactic models of other type theories \citep{sprop,ghosts}
+with notions of irrelevance, which is one application of DCOI,
+a syntactic model of dependency tracking with dependent types is unexplored.
+
+\noindent
+\bibliography{main}
+\end{document}
